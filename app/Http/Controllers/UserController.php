@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
+
 
 class UserController extends Controller
 {
@@ -27,5 +27,26 @@ class UserController extends Controller
             ]);
 
            return $this->userService->registerUser($validatedData);
+    }
+
+    public function getAllUsers()
+    {
+        return $this->userService->getAllUsers();
+    }
+
+    public function getUserById($userId)
+    {
+        return $this->userService->getUserById($userId);
+    }
+
+    public function editUser(Request $request, $userId)
+    {
+        $validatedData = $request->validate([
+            'name' => 'string|max:255',
+            'email' => 'email',
+            'password' => 'string|max:255',
+        ]);
+
+        return $this->userService->editUser($userId, $validatedData);
     }
 }
