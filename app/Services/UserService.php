@@ -10,4 +10,21 @@ class UserService
     {
         return User::query()->create($data);
     }
+
+    public function getAllUsers()
+    {
+        return User::all();
+    }
+
+    public function getUserById($userId)
+    {
+        return User::findOrFail($userId);
+    }
+
+    public function editUser($userId, $userData)
+    {
+        $user = User::findOrFail($userId);
+        $user->update($userData);
+        return $user;
+    }
 }
