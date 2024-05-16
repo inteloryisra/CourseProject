@@ -23,3 +23,4 @@ Route::get('/users', [UserController::class,'getAllUsers']);
 Route::get('/users/{userId}', [UserController::class, 'getUserById']);
 Route::post('/register', [UserController::class, 'register']);
 Route::put('/users/{userId}', [UserController::class, 'editUser']);
+Route::post('/login', [UserController::class, 'loginUser']);

@@ -20,13 +20,13 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-            $validatedData = $request->validate([
+            $data = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email',
                 'password' => 'required|string|max:255',
             ]);
 
-           return $this->userService->registerUser($validatedData);
+            return $this->userService->registerUser($data);
     }
 
     public function getAllUsers()
@@ -41,12 +41,27 @@ class UserController extends Controller
 
     public function editUser(Request $request, $userId)
     {
-        $validatedData = $request->validate([
+        $data = $request->validate([
             'name' => 'string|max:255',
             'email' => 'email',
             'password' => 'string|max:255',
         ]);
 
-        return $this->userService->editUser($userId, $validatedData);
+        return $this->userService->editUser($userId, $data);
     }
+
+    public function loginUser(Request $request)
+    {
+        $data = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $user = $this->userService->loginUser($data);
+
+
+        return response()->json(['user' => $user]);
+    }
+
+
 }
