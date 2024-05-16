@@ -26,7 +26,7 @@ class UserController extends Controller
                 'password' => 'required|string|max:255',
             ]);
 
-           return $this->userService->registerUser($validatedData);
+            return $this->userService->registerUser($validatedData);
     }
 
     public function getAllUsers()
@@ -49,4 +49,19 @@ class UserController extends Controller
 
         return $this->userService->editUser($userId, $validatedData);
     }
+
+    public function loginUser(Request $request)
+    {
+        $validatedData = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $user = $this->userService->loginUser($validatedData);
+
+
+        return response()->json(['user' => $user]);
+    }
+
+
 }
