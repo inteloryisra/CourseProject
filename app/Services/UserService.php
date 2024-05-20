@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+
 class UserService
 {
 
@@ -46,27 +47,31 @@ class UserService
         return ['user' => $user, 'token' => $token];
     }
 
-    public function changePassword($userId, $oldPassword, $newPassword)
-{
-    $user = User::findOrFail($userId);
-
-
-    if (!Hash::check($oldPassword, $user->password)) {
-        return response()->json(['error' => 'Invalid old password'], 401);
+    public function logoutUser()
+    {
+        $user=Auth::user();
+        $user->currentAccessToken()->delete();
     }
 
+    public function changePassword($data)
+    {
+        $user = User::where('email', $data['email'])->first();
 
-    $user->update([
-        'password' => Hash::make($newPassword),
-    ]);
+        if (!$user || !Hash::check($data['oldPassword'], $user->password)) {
+            return response()->json(['error' => 'Invalid old password'], 401);
+        }
 
-    return response()->json(['message' => 'Password updated successfully']);
-}
+        $user->update([
+            'password' => Hash::make($data['newPassword']),
+        ]);
+
+        return response()->json(['message' => 'Password updated successfully']);
+    }
+
 
 public function returnTockenUser()
 {
     return Auth::user();
 }
-
 
 }
