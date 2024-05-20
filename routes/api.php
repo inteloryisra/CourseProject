@@ -24,3 +24,10 @@ Route::get('/users/{userId}', [UserController::class, 'getUserById']);
 Route::post('/register', [UserController::class, 'register']);
 Route::put('/users/{userId}', [UserController::class, 'editUser']);
 Route::post('/login', [UserController::class, 'loginUser']);
+Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
+Route::put('/users/{userId}/change-password', [UserController::class, 'changePassword'])->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'returnTockenUser']);
+
+
+
+

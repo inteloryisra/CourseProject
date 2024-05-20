@@ -63,5 +63,28 @@ class UserController extends Controller
         return response()->json(['user' => $user]);
     }
 
+    public function logout(Request $request)
+{
+    $request->user()->currentAccessToken()->delete();
+
+    return response()->json(['message' => 'Logged out successfully']);
+}
+
+public function changePassword(Request $request, $userId)
+{
+    $data = $request->validate([
+        'oldPassword' => 'required|string|max:255',
+        'newPassword' => 'required|string|max:255',
+    ]);
+
+    return $this->userService->changePassword($userId, $data['oldPassword'], $data['newPassword']);
+}
+
+public function returnTockenUser()
+{
+    return $this->userService->returnTockenUser();
+}
+
+
 
 }

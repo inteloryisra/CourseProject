@@ -46,4 +46,27 @@ class UserService
         return ['user' => $user, 'token' => $token];
     }
 
+    public function changePassword($userId, $oldPassword, $newPassword)
+{
+    $user = User::findOrFail($userId);
+
+
+    if (!Hash::check($oldPassword, $user->password)) {
+        return response()->json(['error' => 'Invalid old password'], 401);
+    }
+
+
+    $user->update([
+        'password' => Hash::make($newPassword),
+    ]);
+
+    return response()->json(['message' => 'Password updated successfully']);
+}
+
+public function returnTockenUser()
+{
+    return Auth::user();
+}
+
+
 }
