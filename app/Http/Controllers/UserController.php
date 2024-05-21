@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\UserService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 
 
@@ -62,6 +63,31 @@ class UserController extends Controller
 
         return response()->json(['user' => $user]);
     }
+
+    public function logout(Request $request)
+{
+    $this->userService->logoutUser();
+
+    return response()->json(['message' => 'Logged out successfully']);
+}
+
+public function changePassword(Request $request)
+{
+    $data = $request->validate([
+        'email' => 'required|email',
+        'oldPassword' => 'required|string|max:255',
+        'newPassword' => 'required|string|max:255',
+    ]);
+
+    return $this->userService->changePassword($data);
+}
+
+
+public function returnTockenUser()
+{
+    return $this->userService->returnTockenUser();
+}
+
 
 
 }
