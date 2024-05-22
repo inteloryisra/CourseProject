@@ -47,4 +47,8 @@ class User extends Authenticatable
         'role' => UserRoles::class,
 
     ];
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class);
+    }
 }
