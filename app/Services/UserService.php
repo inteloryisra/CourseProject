@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\Plan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -21,12 +22,12 @@ class UserService
 
     public function getAllUsers()
     {
-        return User::all();
+        return User::with('plans')->get();
     }
 
     public function getUserById($userId)
     {
-        return User::findOrFail($userId);
+        return User::with('plans')->findOrFail($userId);
     }
 
     public function editUser($userId, $userData)
@@ -72,6 +73,15 @@ class UserService
 public function returnTockenUser()
 {
     return Auth::user();
+}
+public function choosePlan(User $user, $planId)
+{
+    $plan = Plan::findOrFail($planId);
+
+    // Attach the plan to the user
+    $user->plans()->syncWithoutDetaching([$plan->id]);
+
+    return $user;
 }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
@@ -19,12 +20,13 @@ class UserController extends Controller
     }
 
 
-    public function register(Request $request)
+    public function registerUser(Request $request)
     {
             $data = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email',
                 'password' => 'required|string|max:255',
+                'role' => 'required|in:USER,ADMIN',
             ]);
 
             return $this->userService->registerUser($data);
@@ -87,7 +89,11 @@ public function returnTockenUser()
 {
     return $this->userService->returnTockenUser();
 }
+public function choosePlan(Request $request, User $user, $planId)
+{
+    $user = $this->userService->choosePlan($user, $planId);
 
-
+    return response()->json(['message' => 'Plan chosen successfully', 'user' => $user]);
+}
 
 }

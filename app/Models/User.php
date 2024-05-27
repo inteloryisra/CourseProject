@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Plan::class);
     }
+
+    public function plans()
+    {
+        return $this->belongsToMany(Plan::class, 'user_plans');
+    }
 }
