@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
+use App\Http\Controllers\QuizAttemptController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,10 +36,10 @@ Route::post('/create-plan', [PlanController::class, 'createPlan'])->middleware('
 Route::get('/users/{user}/choose-plan/{planId}', [UserController::class, 'choosePlan'])->middleware('auth:sanctum');
 
 Route::get('/quizzes',[QuizController::class,'getAllQuizzes']);
-Route::post('/create-quiz',[QuizController::class,'createQuiz']);
-Route::put('/quizzes/{quizId}',[QuizController::class,'updateQuiz']);
+Route::post('/create-quiz',[QuizController::class,'createQuiz'])->middleware('auth:sanctum', 'admin');
+Route::put('/quizzes/{quizId}',[QuizController::class,'updateQuiz'])->middleware('auth:sanctum', 'admin');
 Route::get('/quizzes/{quizId}',[QuizController::class,'getQuizById']);
-Route::delete('/quizzes/{quizId}', [QuizController::class, 'deleteQuiz']);
+Route::delete('/quizzes/{quizId}', [QuizController::class, 'deleteQuiz'])->middleware('auth:sanctum', 'admin');
 Route::post('/create-question', [QuestionController::class, 'createQuestion']);
 Route::put('/questions/{questionId}', [QuestionController::class, 'updateQuestion']);
 Route::delete('/questions/{questionId}', [QuestionController::class, 'deleteQuestion']);
@@ -49,6 +50,9 @@ Route::put('/answers/{answerId}', [AnswerController::class, 'updateAnswer']);
 Route::delete('/answers/{answerId}', [AnswerController::class, 'deleteAnswer']);
 Route::get('/answers', [AnswerController::class, 'getAllAnswers']);
 Route::get('/answers/{answerId}', [AnswerController::class, 'getAnswerById']);
+Route::post('/quiz-attempts/start/{quizId}', [QuizAttemptController::class, 'startQuiz'])->middleware('auth:sanctum');
+Route::post('/quiz-attempts/{quizAttemptId}/submit-answers', [QuizAttemptController::class, 'submitAnswers'])->middleware('auth:sanctum');
+Route::get('/quiz-attempts/{quizAttemptId}', [QuizAttemptController::class, 'getQuizAttempt']);
 
 
 

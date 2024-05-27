@@ -26,7 +26,7 @@ class QuizService
 
     public function getQuizById($quizId)
     {
-        return Quiz::query()->findOrFail($quizId);
+        return Quiz::query()->with('questions.answers')->findOrFail($quizId);
     }
 
     public function getAllQuizzes()

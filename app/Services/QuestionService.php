@@ -25,7 +25,7 @@ class QuestionService
 
     public function getQuestionById($questionId)
     {
-        return Question::query()->findOrFail($questionId);
+        return Question::query()->with('answers')->findOrFail($questionId);
     }
 
     public function getAllQuestions()
