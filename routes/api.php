@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\QuizController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\AnswerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +30,25 @@ Route::post('/login', [UserController::class, 'loginUser']);
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('/me', [UserController::class, 'returnTockenUser'])->middleware('auth:sanctum');
 Route::put('/change-password', [UserController::class,'changePassword']);
+Route::get('/quizzes',[QuizController::class,'getAllQuizzes']);
+Route::post('/create-quiz',[QuizController::class,'createQuiz']);
+Route::put('/quizzes/{quizId}',[QuizController::class,'updateQuiz']);
+Route::get('/quizzes/{quizId}',[QuizController::class,'getQuizById']);
+Route::delete('/quizzes/{quizId}', [QuizController::class, 'deleteQuiz']);
+Route::post('/create-question', [QuestionController::class, 'createQuestion']);
+Route::put('/questions/{questionId}', [QuestionController::class, 'updateQuestion']);
+Route::delete('/questions/{questionId}', [QuestionController::class, 'deleteQuestion']);
+Route::get('/questions', [QuestionController::class, 'getAllQuestions']);
+Route::get('/questions/{questionId}', [QuestionController::class, 'getQuestionById']);
+Route::post('/create-answer', [AnswerController::class, 'createAnswer']);
+Route::put('/answers/{answerId}', [AnswerController::class, 'updateAnswer']);
+Route::delete('/answers/{answerId}', [AnswerController::class, 'deleteAnswer']);
+Route::get('/answers', [AnswerController::class, 'getAllAnswers']);
+Route::get('/answers/{answerId}', [AnswerController::class, 'getAnswerById']);
+
+
+
+
 
 
 
