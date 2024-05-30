@@ -20,6 +20,7 @@ class AnswerController extends Controller
             'question_id' => 'required|integer',
             'answer' => 'required|string',
             'is_correct' => 'required|boolean',
+            'language_id' => 'required|integer|exists:languages,id',
         ]);
 
         return $this->answerService->createAnswer($data);
@@ -31,6 +32,7 @@ class AnswerController extends Controller
             'question_id' => 'integer',
             'answer' => 'string',
             'is_correct' => 'boolean',
+            'language_id' => 'integer|exists:languages,id',
         ]);
 
         return $this->answerService->updateAnswer($answerId, $data);

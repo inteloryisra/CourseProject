@@ -33,4 +33,9 @@ class QuizService
     {
         return Quiz::all();
     }
+
+    public function getQuizByLanguage($languageId)
+    {
+        return Quiz::where('language_id', $languageId)->with('questions.answers')->get();
+    }
 }

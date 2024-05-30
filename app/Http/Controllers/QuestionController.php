@@ -19,6 +19,7 @@ class QuestionController extends Controller
         $data= $request->validate([
             'quiz_id' => 'required|integer',
             'question' => 'required|string',
+            'language_id' => 'required|integer|exists:languages,id',
         ]);
         return $this->questionService->createQuestion($data);
     }
@@ -28,6 +29,7 @@ class QuestionController extends Controller
         $data = $request->validate([
             'quiz_id' => 'integer',
             'question' => 'string',
+            'language_id' => 'integer|exists:languages,id',
         ]);
 
         return $this->questionService->updateQuestion($questionId, $data);

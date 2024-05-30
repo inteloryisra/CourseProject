@@ -6,17 +6,19 @@ use App\Models\QuizAttempt;
 use App\Models\QuizAttemptAnswer;
 use App\Models\Question;
 use App\Models\Answer;
+use App\Models\Language;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class QuizAttemptService
 {
-    public function startQuiz($quizId)
+    public function startQuiz($quizId, $data)
     {
-        $user=Auth::user();
+        $user = Auth::user();
         $quizAttempt = QuizAttempt::create([
             'user_id' => $user->id,
             'quiz_id' => $quizId,
+            'language_id' => $data['language_id'],
             'score' => null
         ]);
 
@@ -58,5 +60,5 @@ class QuizAttemptService
     public function getQuizAttempt($quizAttemptId)
     {
         return QuizAttempt::with(['quiz', 'user', 'answers'])->findOrFail($quizAttemptId);
-    }
+}
 }

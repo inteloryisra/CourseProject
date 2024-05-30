@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\QuizAttemptService;
+use App\Models\Language;
 
 class QuizAttemptController extends Controller
 {
@@ -15,11 +16,15 @@ class QuizAttemptController extends Controller
     }
 
     public function startQuiz(Request $request, $quizId)
-{
+    {
 
-    $quizAttempt = $this->quizAttemptService->startQuiz($quizId);
-    return response()->json($quizAttempt, 201);
-}
+        $data = $request->validate([
+            'language_id' => 'required|exists:languages,id',
+        ]);
+
+        $quizAttempt = $this->quizAttemptService->startQuiz($quizId, $data);
+        return response()->json($quizAttempt, 201);
+    }
 
     public function submitAnswers(Request $request, $quizAttemptId)
     {
