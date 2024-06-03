@@ -25,36 +25,53 @@ class QuizAttemptService
         return $quizAttempt;
     }
 
-    public function submitAnswers($quizAttemptId, $data)
-{
-    $quizAttempt = QuizAttempt::query()->findOrFail($quizAttemptId);
-    $score = 0;
+    public function countUserAttempts($quizId)
+   {
+       $user = Auth::user();
+       return QuizAttempt::where('quiz_id', $quizId)
+                         ->where('user_id', $user->id)
+                         ->count();
+   }
 
-    DB::transaction(function () use ($quizAttempt, $data, &$score) {
-        foreach ($data['answers'] as $item) {
-            $questionId = $item['question_id'];
-            $answerId = $item['answer_id'];
+   public function submitAnswers($quizAttemptId, $data)
+   {
+      $quizAttempt = QuizAttempt::query()->findOrFail($quizAttemptId);
+      $score = 0;
 
-            $question = Question::query()->findOrFail($questionId);
-            $answer = Answer::findOrFail($answerId);
 
-            QuizAttemptAnswer::create([
-                'quiz_attempt_id' => $quizAttempt->id,
-                'question_id' => $questionId,
-                'answer_id' => $answerId
-            ]);
+      DB::transaction(function () use ($quizAttempt, $data, &$score) {
+          foreach ($data['answers'] as $item) {
+              $questionId = $item['question_id'];
+              $answerId = $item['answer_id'];
 
-            if ($answer->is_correct) {
-                $score++;
-            }
-        }
 
-        $quizAttempt->update(['score' => $score]);
-    });
+              $question = Question::query()->findOrFail($questionId);
+              $answer = Answer::query()->findOrFail($answerId);
 
-    return "Your score is $score";
-}
 
+              QuizAttemptAnswer::create([
+                  'quiz_attempt_id' => $quizAttempt->id,
+                  'question_id' => $questionId,
+                  'answer_id' => $answerId
+              ]);
+
+
+              if ($answer->is_correct) {
+                  $score++;
+              }
+          }
+
+
+          $quizAttempt->update(['score' => $score]);
+      });
+
+
+      $result = $score >= 10 ? 'You have passed the test' : 'You have failed the test';
+      return [
+          'message' => $result,
+          'score' => $score
+      ];
+   }
 
 
     public function getQuizAttempt($quizAttemptId)
