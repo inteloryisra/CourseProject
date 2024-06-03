@@ -13,24 +13,24 @@ class AnswerService
 
     public function updateAnswer($answerId, $data)
     {
-        $answer = Answer::findOrFail($answerId);
+        $answer = Answer::query()->findOrFail($answerId);
         $answer->update($data);
         return $answer;
     }
 
     public function deleteAnswer($answerId)
     {
-        $answer = Answer::findOrFail($answerId);
-        $answer->delete();
+        return Answer::destroy($answerId);
+
     }
 
     public function getAnswerById($answerId)
     {
-        return Answer::findOrFail($answerId);
+        return Answer::query()->findOrFail($answerId);
     }
 
     public function getAllAnswers()
     {
-        return Answer::all();
+        return Answer::query()->get();
     }
 }

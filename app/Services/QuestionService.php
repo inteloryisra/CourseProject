@@ -13,14 +13,14 @@ class QuestionService
 
     public function updateQuestion($questionId, $data)
     {
-        $question=Question::findOrFail($questionId);
+        $question=Question::query()->findOrFail($questionId);
         $question->update($data);
         return $question;
     }
     public function deleteQuestion($questionId)
     {
-        $question=Question::findOrFail($questionId);
-        $question->delete();
+        return Question::destroy($questionId);
+
     }
 
     public function getQuestionById($questionId)
@@ -30,7 +30,7 @@ class QuestionService
 
     public function getAllQuestions()
     {
-        return Question::all();
+        return Question::query()->get();
     }
 
 }

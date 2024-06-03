@@ -36,8 +36,6 @@ class QuizAttemptController extends Controller
 
         $quizAttempt = $this->quizAttemptService->submitAnswers($quizAttemptId, $data);
 
-        //dd($quizAttempt);
-
         return response()->json($quizAttempt, 200);
     }
 

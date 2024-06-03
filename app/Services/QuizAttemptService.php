@@ -35,7 +35,7 @@ class QuizAttemptService
             $questionId = $item['question_id'];
             $answerId = $item['answer_id'];
 
-            $question = Question::findOrFail($questionId);
+            $question = Question::query()->findOrFail($questionId);
             $answer = Answer::findOrFail($answerId);
 
             QuizAttemptAnswer::create([
@@ -59,6 +59,6 @@ class QuizAttemptService
 
     public function getQuizAttempt($quizAttemptId)
     {
-        return QuizAttempt::with(['quiz', 'user', 'answers'])->findOrFail($quizAttemptId);
+        return QuizAttempt::query()->with(['quiz', 'user', 'answers'])->findOrFail($quizAttemptId);
 }
 }
