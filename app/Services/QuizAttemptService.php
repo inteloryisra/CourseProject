@@ -38,29 +38,27 @@ class QuizAttemptService
       $quizAttempt = QuizAttempt::query()->findOrFail($quizAttemptId);
       $score = 0;
 
-
-      DB::transaction(function () use ($quizAttempt, $data, &$score) {
-          foreach ($data['answers'] as $item) {
-              $questionId = $item['question_id'];
-              $answerId = $item['answer_id'];
+      foreach ($data['answers'] as $item) {
+        $questionId = $item['question_id'];
+        $answerId = $item['answer_id'];
 
 
-              $question = Question::query()->findOrFail($questionId);
-              $answer = Answer::query()->findOrFail($answerId);
+        $answer = Answer::query()->findOrFail($answerId);
 
 
-              QuizAttemptAnswer::create([
-                  'quiz_attempt_id' => $quizAttempt->id,
-                  'question_id' => $questionId,
-                  'answer_id' => $answerId
-              ]);
+        QuizAttemptAnswer::create([
+            'quiz_attempt_id' => $quizAttempt->id,
+            'question_id' => $questionId,
+            'answer_id' => $answerId
+        ]);
 
 
-              if ($answer->is_correct) {
-                  $score++;
-              }
-          }
+        if ($answer->is_correct) {
+            $score++;
+        }
+    }
 
+      DB::transaction(function () use ($quizAttempt, &$score) {
 
           $quizAttempt->update(['score' => $score]);
       });
