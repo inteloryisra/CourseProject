@@ -21,13 +21,6 @@ class QuizAttemptController extends Controller
             'language_id' => 'required|exists:languages,id',
         ]);
 
-
-        $attempts = $this->quizAttemptService->countUserAttempts($quizId);
-        if ($attempts >= 3) {
-            return response()->json(['error' => 'You have reached the maximum number of attempts for this quiz'], 403);
-        }
-
-
         $quizAttempt = $this->quizAttemptService->startQuiz($quizId, $data);
         return response()->json($quizAttempt, 201);
     }

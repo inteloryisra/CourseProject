@@ -15,6 +15,16 @@ class QuizAttemptService
     public function startQuiz($quizId, $data)
     {
         $user = Auth::user();
+
+        
+        $attempts = QuizAttempt::where('quiz_id', $quizId)
+                                ->where('user_id', $user->id)
+                                ->count();
+
+        if ($attempts >= 3) {
+            return ['error' => 'You have reached the maximum number of attempts for this quiz'];
+        }
+
         $quizAttempt = QuizAttempt::create([
             'user_id' => $user->id,
             'quiz_id' => $quizId,
@@ -25,13 +35,6 @@ class QuizAttemptService
         return $quizAttempt;
     }
 
-    public function countUserAttempts($quizId)
-   {
-       $user = Auth::user();
-       return QuizAttempt::where('quiz_id', $quizId)
-                         ->where('user_id', $user->id)
-                         ->count();
-   }
 
    public function submitAnswers($quizAttemptId, $data)
    {
