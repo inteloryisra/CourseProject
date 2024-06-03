@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\QuizService;
+
 use Illuminate\Http\Request;
+use App\Services\QuizService;
 
 class QuizController extends Controller
 {

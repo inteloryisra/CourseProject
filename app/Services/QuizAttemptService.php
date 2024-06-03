@@ -2,13 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\QuizAttempt;
-use App\Models\QuizAttemptAnswer;
+
+
 use App\Models\Question;
 use App\Models\Answer;
 use App\Models\Language;
+use App\Models\QuizAttempt;
+use App\Models\QuizAttemptAnswer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+
 
 class QuizAttemptService
 {
@@ -25,6 +28,14 @@ class QuizAttemptService
         return $quizAttempt;
     }
 
+    public function countUserAttempts($quizId)
+    {
+        $user = Auth::user();
+        return QuizAttempt::where('quiz_id', $quizId)
+                          ->where('user_id', $user->id)
+                          ->count();
+    }
+
     public function submitAnswers($quizAttemptId, $data)
 {
     $quizAttempt = QuizAttempt::query()->findOrFail($quizAttemptId);
@@ -36,7 +47,7 @@ class QuizAttemptService
             $answerId = $item['answer_id'];
 
             $question = Question::query()->findOrFail($questionId);
-            $answer = Answer::findOrFail($answerId);
+            $answer = Answer::query()->findOrFail($answerId);
 
             QuizAttemptAnswer::create([
                 'quiz_attempt_id' => $quizAttempt->id,
@@ -52,7 +63,11 @@ class QuizAttemptService
         $quizAttempt->update(['score' => $score]);
     });
 
-    return "Your score is $score";
+    $result = $score >= 10 ? 'You have passed the test' : 'You have failed the test';
+    return [
+        'message' => $result,
+        'score' => $score
+    ];
 }
 
 
