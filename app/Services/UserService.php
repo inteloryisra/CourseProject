@@ -13,26 +13,26 @@ class UserService
 
     public function registerUser($data)
     {
-        $user = User::query()->create($data);
 
-        return $user;
+        return User::query()->create($data);
+
     }
 
 
 
     public function getAllUsers()
     {
-        return User::with('plans')->get();
+        return User::query()->with('plans')->get();
     }
 
     public function getUserById($userId)
     {
-        return User::with('plans')->findOrFail($userId);
+        return User::query()->with('plans')->findOrFail($userId);
     }
 
     public function editUser($userId, $userData)
     {
-        $user = User::findOrFail($userId);
+        $user = User::query()->findOrFail($userId);
         $user->update($userData);
         return $user;
     }
@@ -56,7 +56,7 @@ class UserService
 
     public function changePassword($data)
     {
-        $user = User::where('email', $data['email'])->first();
+        $user = User::query()->where('email', $data['email'])->first();
 
         if (!$user || !Hash::check($data['oldPassword'], $user->password)) {
             return response()->json(['error' => 'Invalid old password'], 401);
@@ -76,7 +76,7 @@ public function returnTockenUser()
 }
 public function choosePlan(User $user, $planId)
 {
-    $plan = Plan::findOrFail($planId);
+    $plan = Plan::query()->findOrFail($planId);
 
     // Attach the plan to the user
     $user->plans()->syncWithoutDetaching([$plan->id]);

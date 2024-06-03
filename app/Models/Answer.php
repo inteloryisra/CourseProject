@@ -17,7 +17,8 @@ class Answer extends Model
     protected $fillable = [
         'question_id',
         'answer',
-        'is_correct'
+        'is_correct',
+        'language_id',
 
     ];
     protected $hidden = [
@@ -28,6 +29,11 @@ class Answer extends Model
     public function question()
     {
         return $this->belongsTo(Question::class);
+    }
+
+    public function language()
+    {
+        return $this->belongsTo(Language::class);
     }
 
 }

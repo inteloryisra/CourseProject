@@ -18,6 +18,7 @@ class QuizAttempt extends Model
     protected $fillable = [
         'user_id',
         'quiz_id',
+        'language_id',
         'score',
     ];
     public function user()
@@ -32,5 +33,10 @@ class QuizAttempt extends Model
     {
         return $this->hasMany(QuizAttemptAnswer::class);
     }
-    
+
+    public function language()
+{
+    return $this->belongsTo(Language::class);
+}
+
 }

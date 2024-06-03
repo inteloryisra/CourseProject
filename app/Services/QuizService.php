@@ -13,15 +13,14 @@ class QuizService
 
     public function updateQuiz($quizId, $data)
     {
-        $quiz= Quiz::findOrFail($quizId);
+        $quiz= Quiz::query()->findOrFail($quizId);
         $quiz->update($data);
         return $quiz;
     }
 
     public function deleteQuiz($quizId)
     {
-        $quiz= Quiz::findOrFail($quizId);
-        $quiz->delete();
+       return Quiz::destroy($quizId);
     }
 
     public function getQuizById($quizId)
@@ -31,6 +30,11 @@ class QuizService
 
     public function getAllQuizzes()
     {
-        return Quiz::all();
+        return Quiz::query()->get();
+    }
+
+    public function getQuizByLanguage($languageId)
+    {
+        return Quiz::query()->where('language_id',$languageId)->with('questions.answers')->get();
     }
 }

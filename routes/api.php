@@ -53,6 +53,7 @@ Route::get('/answers/{answerId}', [AnswerController::class, 'getAnswerById']);
 Route::post('/quiz-attempts/start/{quizId}', [QuizAttemptController::class, 'startQuiz'])->middleware('auth:sanctum');
 Route::post('/quiz-attempts/{quizAttemptId}/submit-answers', [QuizAttemptController::class, 'submitAnswers'])->middleware('auth:sanctum');
 Route::get('/quiz-attempts/{quizAttemptId}', [QuizAttemptController::class, 'getQuizAttempt']);
+Route::get('/quizzes/language/{language_id}', [QuizController::class, 'getQuizByLanguage']);
 
 
 

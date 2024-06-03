@@ -10,8 +10,7 @@ class PlanService
 {
     public function createPlan($data)
     {
-        $plan = Plan::query()->create($data);
+        return Plan::query()->create($data);
 
-        return $plan;
     }
 }
