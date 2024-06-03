@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,12 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('questions', function (Blueprint $table) {
-            $table->foreignId('language_id')->nullable()->constrained('languages')->after('quiz_id');
-        });
+        DB::transaction(function () {
+            Schema::table('questions', function (Blueprint $table) {
+                $table->foreignId('language_id')->nullable()->constrained('languages')->after('quiz_id');
+            });
 
-        Schema::table('answers', function (Blueprint $table) {
-            $table->foreignId('language_id')->nullable()->constrained('languages')->after('question_id');
+            Schema::table('answers', function (Blueprint $table) {
+                $table->foreignId('language_id')->nullable()->constrained('languages')->after('question_id');
+            });
         });
     }
 
@@ -25,14 +28,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('questions', function (Blueprint $table) {
-            $table->dropForeign(['language_id']);
-            $table->dropColumn('language_id');
-        });
+        DB::transaction(function () {
+            Schema::table('questions', function (Blueprint $table) {
+                $table->dropForeign(['language_id']);
+                $table->dropColumn('language_id');
+            });
 
-        Schema::table('answers', function (Blueprint $table) {
-            $table->dropForeign(['language_id']);
-            $table->dropColumn('language_id');
+            Schema::table('answers', function (Blueprint $table) {
+                $table->dropForeign(['language_id']);
+                $table->dropColumn('language_id');
+            });
         });
     }
 };
