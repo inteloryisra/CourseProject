@@ -16,7 +16,7 @@ class QuizAttemptService
     {
         $user = Auth::user();
 
-        
+
         $attempts = QuizAttempt::where('quiz_id', $quizId)
                                 ->where('user_id', $user->id)
                                 ->count();
@@ -36,43 +36,44 @@ class QuizAttemptService
     }
 
 
-   public function submitAnswers($quizAttemptId, $data)
-   {
-      $quizAttempt = QuizAttempt::query()->findOrFail($quizAttemptId);
-      $score = 0;
-
-      foreach ($data['answers'] as $item) {
-        $questionId = $item['question_id'];
-        $answerId = $item['answer_id'];
+    public function submitAnswers($quizAttemptId, $data)
+    {
+    $quizAttempt = QuizAttempt::query()->findOrFail($quizAttemptId);
+    $score = 0;
+    $quizAttemptAnswers = [];
 
 
-        $answer = Answer::query()->findOrFail($answerId);
+        $answerIds = array_column($data['answers'], 'answer_id');
+        $answers = Answer::query()->whereIn('id', $answerIds)->get()->keyBy('id');
 
+        DB::transaction(function () use ($quizAttempt, $data, &$score, &$quizAttemptAnswers, $answers) {
+            foreach ($data['answers'] as $item) {
+                $questionId = $item['question_id'];
+                $answerId = $item['answer_id'];
+                $answer = $answers[$answerId];
 
-        QuizAttemptAnswer::create([
-            'quiz_attempt_id' => $quizAttempt->id,
-            'question_id' => $questionId,
-            'answer_id' => $answerId
-        ]);
+                $quizAttemptAnswers[] = [
+                    'quiz_attempt_id' => $quizAttempt->id,
+                    'question_id' => $questionId,
+                    'answer_id' => $answer->id
+                ];
 
+                if ($answer->is_correct) {
+                    $score++;
+                }
+            }
 
-        if ($answer->is_correct) {
-            $score++;
-        }
+            QuizAttemptAnswer::query()->insert($quizAttemptAnswers);
+
+            $quizAttempt->update(['score' => $score]);
+        });
+
+        $result = $score >= 10 ? 'You have passed the test' : 'You have failed the test';
+        return [
+            'message' => $result,
+            'score' => $score
+        ];
     }
-
-      DB::transaction(function () use ($quizAttempt, &$score) {
-
-          $quizAttempt->update(['score' => $score]);
-      });
-
-
-      $result = $score >= 10 ? 'You have passed the test' : 'You have failed the test';
-      return [
-          'message' => $result,
-          'score' => $score
-      ];
-   }
 
 
     public function getQuizAttempt($quizAttemptId)
