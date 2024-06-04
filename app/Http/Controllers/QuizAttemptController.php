@@ -17,7 +17,6 @@ class QuizAttemptController extends Controller
 
     public function startQuiz(Request $request, $quizId)
     {
-
         $data = $request->validate([
             'language_id' => 'required|exists:languages,id',
         ]);
