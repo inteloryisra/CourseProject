@@ -130,7 +130,7 @@ class QuizTest extends TestCase
         $retrievedQuizzes = $quizService->getAllQuizzes();
 
 
-        $this->assertCount(4, $retrievedQuizzes);
+        $this->assertCount(5, $retrievedQuizzes);
 
 
         foreach ($quizzes as $quiz) {

@@ -13,4 +13,9 @@ class PlanService
         return Plan::query()->create($data);
 
     }
+
+    public function deletePlan($planId)
+    {
+       return Plan::destroy($planId);
+    }
 }

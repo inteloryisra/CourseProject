@@ -34,4 +34,9 @@ class PlanController extends Controller
 
         return response()->json(['message' => 'Plan created successfully', 'plan' => $plan], 201);
     }
+
+    public function deletePlan($planId)
+    {
+        $this->planService->deletePlan($planId);
+    }
 }
