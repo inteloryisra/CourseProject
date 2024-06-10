@@ -39,4 +39,8 @@ class PlanController extends Controller
     {
         $this->planService->deletePlan($planId);
     }
+    public function getAllPlans()
+    {
+        return $this->planService->getAllPlans();
+    }
 }

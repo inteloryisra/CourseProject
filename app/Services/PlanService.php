@@ -18,4 +18,9 @@ class PlanService
     {
        return Plan::destroy($planId);
     }
+
+    public function getAllPlans()
+    {
+        return Plan::query()->get();
+    }
 }
