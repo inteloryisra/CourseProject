@@ -32,7 +32,9 @@ Route::post('/login', [UserController::class, 'loginUser']);
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('/me', [UserController::class, 'returnTockenUser'])->middleware('auth:sanctum');
 Route::put('/change-password', [UserController::class,'changePassword']);
+Route::get('/plans', [PlanController::class,'getAllPlans']);
 Route::post('/create-plan', [PlanController::class, 'createPlan'])->middleware('auth:sanctum', 'admin');
+Route::delete('/plans/{planId}', [PlanController::class, 'deletePlan'])->middleware('auth:sanctum', 'admin');
 Route::get('/users/{user}/choose-plan/{planId}', [UserController::class, 'choosePlan'])->middleware('auth:sanctum');
 
 Route::get('/quizzes',[QuizController::class,'getAllQuizzes']);
