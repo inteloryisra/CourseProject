@@ -27,7 +27,7 @@ class UserService
 
     public function getUserById($userId)
     {
-        return User::query()->with('plans')->findOrFail($userId);
+        return User::query()->with('plan')->findOrFail($userId);
     }
 
     public function editUser($userId, $userData)
@@ -74,13 +74,14 @@ public function returnTockenUser()
 {
     return Auth::user();
 }
-public function choosePlan($userId, $planId)
+public function choosePlan($planId)
 {
-    $user = User::findOrFail($userId);
+    $user = Auth::user();
     $plan = Plan::findOrFail($planId);
 
-    $user->plan()->associate($plan); 
-    $user->save();
+    $user->update([
+        'plan_id' => $plan->id,
+    ]);
 
     return $user;
 }

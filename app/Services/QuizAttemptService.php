@@ -4,11 +4,12 @@ namespace App\Services;
 
 
 
-use App\Models\Question;
+use App\Models\Plan;
+use App\Models\User;
 use App\Models\Answer;
 use App\Models\Language;
+use App\Models\Question;
 use App\Models\QuizAttempt;
-use App\Models\User;
 use App\Models\QuizAttemptAnswer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,7 @@ class QuizAttemptService
         $user = Auth::user();
 
 
-        $plan = $user->plan;
+        $plan = Plan::query()->where('id', $user->plan_id)->first();
 
         if (!$plan) {
             return ['error' => 'No active plan found.'];
@@ -36,7 +37,7 @@ class QuizAttemptService
             return ['error' => 'You have reached the maximum number of attempts for this quiz'];
         }
 
-        
+
         $quizAttempt = QuizAttempt::create([
             'user_id' => $user->id,
             'quiz_id' => $quizId,

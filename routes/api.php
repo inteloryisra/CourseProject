@@ -35,7 +35,7 @@ Route::put('/change-password', [UserController::class,'changePassword']);
 Route::get('/plans', [PlanController::class,'getAllPlans']);
 Route::post('/create-plan', [PlanController::class, 'createPlan'])->middleware('auth:sanctum', 'admin');
 Route::delete('/plans/{planId}', [PlanController::class, 'deletePlan'])->middleware('auth:sanctum', 'admin');
-Route::get('/users/{user}/choose-plan/{planId}', [UserController::class, 'choosePlan'])->middleware('auth:sanctum');
+Route::post('/users/choose-plan/{planId}', [UserController::class, 'choosePlan'])->middleware('auth:sanctum');
 
 Route::get('/quizzes',[QuizController::class,'getAllQuizzes']);
 Route::post('/create-quiz',[QuizController::class,'createQuiz'])->middleware('auth:sanctum', 'admin');
