@@ -37,7 +37,7 @@ class UserTest extends TestCase
 
         $response = $this->getJson('/api/users/' . $user->id);
         $response->assertStatus(200);
-        $response->assertJsonStructure(['id', 'name', 'email', 'role']);
+        $response->assertJsonStructure(['id', 'name', 'email', 'role' , 'plan_id']);
     }
 
     public function testEditUser()
@@ -118,14 +118,17 @@ class UserTest extends TestCase
     public function testChoosePlan()
     {
         $user = User::factory()->create();
-        $plan = Plan::factory()->create();
-        Sanctum::actingAs($user);
 
-        // Use a GET request instead of a POST request
-        $response = $this->get('/api/users/' . $user->id . '/choose-plan/' . $plan->id);
+        $plan = Plan::factory()->create(['max_quiz_attempts' => 3]);
 
-        $response->assertStatus(200);
-        $response->assertJson(['message' => 'Plan chosen successfully']);
+        $userService = new UserService();
+
+        $this->actingAs($user);
+
+        $updatedUser = $userService->choosePlan($plan->id);
+
+        $this->assertEquals($plan->id, $updatedUser->plan_id);
     }
+
 
 }

@@ -22,12 +22,12 @@ class UserService
 
     public function getAllUsers()
     {
-        return User::query()->with('plans')->get();
+        return User::query()->get();
     }
 
     public function getUserById($userId)
     {
-        return User::query()->with('plan')->findOrFail($userId);
+        return User::query()->findOrFail($userId);
     }
 
     public function editUser($userId, $userData)
