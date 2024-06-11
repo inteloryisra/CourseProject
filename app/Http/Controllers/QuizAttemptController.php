@@ -16,14 +16,20 @@ class QuizAttemptController extends Controller
     }
 
     public function startQuiz(Request $request, $quizId)
-    {
-        $data = $request->validate([
-            'language_id' => 'required|exists:languages,id',
-        ]);
+{
+    $data = $request->validate([
+        'language_id' => 'required|exists:languages,id',
+    ]);
 
-        $quizAttempt = $this->quizAttemptService->startQuiz($quizId, $data);
-        return response()->json($quizAttempt, 201);
+    $result = $this->quizAttemptService->startQuiz($quizId, $data);
+
+    if (isset($result['error'])) {
+        return response()->json(['error' => $result['error']], 403);
     }
+
+    return response()->json($result, 201);
+}
+
 
     public function submitAnswers(Request $request, $quizAttemptId)
     {

@@ -15,11 +15,11 @@ class Plan extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'price',
+        'name', 'price', 'max_quiz_attempts',
     ];
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_plans');
+        return $this->hasMany(User::class);
     }
 }

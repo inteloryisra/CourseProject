@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'plan_id',
     ];
 
     /**
@@ -50,10 +51,5 @@ class User extends Authenticatable
     public function plan()
     {
         return $this->belongsTo(Plan::class);
-    }
-
-    public function plans()
-    {
-        return $this->belongsToMany(Plan::class, 'user_plans');
     }
 }

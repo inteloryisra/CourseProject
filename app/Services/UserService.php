@@ -74,12 +74,13 @@ public function returnTockenUser()
 {
     return Auth::user();
 }
-public function choosePlan(User $user, $planId)
+public function choosePlan($userId, $planId)
 {
-    $plan = Plan::query()->findOrFail($planId);
+    $user = User::findOrFail($userId);
+    $plan = Plan::findOrFail($planId);
 
-    // Attach the plan to the user
-    $user->plans()->syncWithoutDetaching([$plan->id]);
+    $user->plan()->associate($plan); 
+    $user->save();
 
     return $user;
 }
