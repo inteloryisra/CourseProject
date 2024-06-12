@@ -89,9 +89,9 @@ public function returnTockenUser()
 {
     return $this->userService->returnTockenUser();
 }
-public function choosePlan(Request $request, User $user, $planId)
+public function choosePlan(Request $request, $planId)
 {
-    $user = $this->userService->choosePlan($user, $planId);
+    $user = $this->userService->choosePlan($planId);
 
     return response()->json(['message' => 'Plan chosen successfully', 'user' => $user]);
 }

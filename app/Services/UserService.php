@@ -22,12 +22,12 @@ class UserService
 
     public function getAllUsers()
     {
-        return User::query()->with('plans')->get();
+        return User::query()->get();
     }
 
     public function getUserById($userId)
     {
-        return User::query()->with('plans')->findOrFail($userId);
+        return User::query()->findOrFail($userId);
     }
 
     public function editUser($userId, $userData)
@@ -74,12 +74,14 @@ public function returnTockenUser()
 {
     return Auth::user();
 }
-public function choosePlan(User $user, $planId)
+public function choosePlan($planId)
 {
-    $plan = Plan::query()->findOrFail($planId);
+    $user = Auth::user();
+    $plan = Plan::findOrFail($planId);
 
-    // Attach the plan to the user
-    $user->plans()->syncWithoutDetaching([$plan->id]);
+    $user->update([
+        'plan_id' => $plan->id,
+    ]);
 
     return $user;
 }

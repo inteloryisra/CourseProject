@@ -3,11 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRoles;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use App\Enums\UserRoles;
 
 
 class User extends Authenticatable
@@ -24,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'plan_id',
     ];
 
     /**
@@ -47,13 +49,8 @@ class User extends Authenticatable
         'role' => UserRoles::class,
 
     ];
-    public function plan()
+    public function plan(): HasOne
     {
-        return $this->belongsTo(Plan::class);
-    }
-
-    public function plans()
-    {
-        return $this->belongsToMany(Plan::class, 'user_plans');
+        return $this->hasOne(Plan::class);
     }
 }

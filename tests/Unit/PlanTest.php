@@ -17,6 +17,7 @@ class PlanTest extends TestCase
         $data = [
             'name' => 'Test Plan',
             'price' => 9.99,
+            'max_quiz_attempts' => 3,
 
         ];
 
@@ -32,6 +33,7 @@ class PlanTest extends TestCase
 
         $this->assertEquals($data['name'], $createdPlan->name);
         $this->assertEquals($data['price'], $createdPlan->price);
+        $this->assertEquals($data['max_quiz_attempts'], $createdPlan->max_quiz_attempts);
 
         $this->assertDatabaseHas('plans', $data);
     }

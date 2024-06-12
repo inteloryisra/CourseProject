@@ -15,9 +15,9 @@ class PlansTableSeeder extends Seeder
     public function run()
     {
         $plans = [
-            ['name' => 'Basic', 'price' => 29.99],
-            ['name' => 'Premium', 'price' => 49.99],
-            ['name' => 'Enterprise', 'price' => 99.99],
+            ['name' => 'Basic', 'price' => 29.99, 'max_quiz_attempts' => 3],
+            ['name' => 'Premium', 'price' => 49.99, 'max_quiz_attempts' => 5],
+            ['name' => 'Enterprise', 'price' => 99.99, 'max_quiz_attempts' => 10],
         ];
 
         // Insert sample data into the database
