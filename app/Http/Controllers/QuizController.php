@@ -21,6 +21,7 @@ class QuizController extends Controller
             'title' => 'required|string',
             'description' => 'required|string',
             'language_id' => 'required|integer|exists:languages,id',
+            'level' => 'required|in:EASY,MEDIUM,HARD',
         ]);
 
         return $this->quizService->createQuiz($data);

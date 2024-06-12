@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Answer;
 use App\Models\Language;
 use App\Models\Question;
+use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\QuizAttemptAnswer;
 use Illuminate\Support\Facades\DB;
@@ -37,12 +38,13 @@ class QuizAttemptService
             return ['error' => 'You have reached the maximum number of attempts for this quiz'];
         }
 
-
+        $quiz = Quiz::findOrFail($quizId);
         $quizAttempt = QuizAttempt::create([
             'user_id' => $user->id,
             'quiz_id' => $quizId,
             'language_id' => $data['language_id'],
-            'score' => null
+            'score' => null,
+            'level' => $quiz->level,
         ]);
 
         return $quizAttempt;
@@ -93,5 +95,59 @@ class QuizAttemptService
     public function getQuizAttempt($quizAttemptId)
     {
         return QuizAttempt::query()->with(['quiz', 'user', 'answers'])->findOrFail($quizAttemptId);
+    }
+    public function useJoker($quizAttemptId, $questionId)
+    {
+        $quizAttempt = QuizAttempt::query()->findOrFail($quizAttemptId);
+
+        if ($quizAttempt->quiz->level !== 'EASY') {
+            return ['error' => 'Jokers can only be used in EASY quizzes.'];
+        }
+
+        $question = Question::findOrFail($questionId);
+        $answers = $question->answers;
+
+        if ($answers->count() < 2) {
+            return ['error' => 'Not enough answers to use 50/50 joker.'];
+        }
+
+        $correctAnswer = $answers->firstWhere('is_correct', true);
+        $incorrectAnswers = $answers->where('is_correct', false)->random(1);
+
+        return [
+            'answers' => [
+                $correctAnswer,
+                $incorrectAnswers->first(),
+            ],
+        ];
+    }
+
+    public function getHint($quizAttemptId, $questionId)
+{
+    $quizAttempt = QuizAttempt::query()->findOrFail($quizAttemptId);
+
+    if ($quizAttempt->quiz->level !== 'MEDIUM') {
+        return ['error' => 'Hints can only be used in MEDIUM quizzes.'];
+    }
+
+    $offset = rand(0, 3);
+    $length = rand(0, 3);
+
+    if( $length-$offset === 1 || $length===0 || ($offset===0 && $length===0)){
+        $offset = rand(0, 3);
+        $length = rand(0, 3);
+    }
+
+    $hint = substr(
+        Question::findOrFail($questionId)
+        ->answers
+        ->firstWhere('is_correct', true)
+        ->answer
+        , $offset, $length);
+
+    return [
+        'hint' => $hint,
+    ];
+
 }
 }

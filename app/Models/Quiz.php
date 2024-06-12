@@ -18,6 +18,7 @@ class Quiz extends Model
         'title',
         'description',
         'language_id',
+        'level',
     ];
 
     public function questions()

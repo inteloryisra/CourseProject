@@ -59,6 +59,12 @@ Route::get('/quizzes/language/{language_id}', [QuizController::class, 'getQuizBy
 
 
 
+Route::post('/quiz-attempts/{quizAttemptId}/joker/{questionId}', [QuizAttemptController::class, 'useJoker']);
+Route::post('/quiz-attempts/{quizAttemptId}/hint/{questionId}', [QuizAttemptController::class, 'getHint']);
+
+
+
+
 
 
 

@@ -49,4 +49,25 @@ class QuizAttemptController extends Controller
         $quizAttempt = $this->quizAttemptService->getQuizAttempt($quizAttemptId);
         return response()->json($quizAttempt, 200);
     }
+    public function useJoker($quizAttemptId, $questionId)
+    {
+        $result = $this->quizAttemptService->useJoker($quizAttemptId, $questionId);
+
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], 400);
+        }
+
+        return response()->json($result);
+    }
+
+    public function getHint($quizAttemptId, $questionId)
+    {
+        $result = $this->quizAttemptService->getHint($quizAttemptId, $questionId);
+
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], 400);
+        }
+
+        return response()->json($result);
+    }
 }
