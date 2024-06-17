@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlanController;
@@ -56,6 +57,11 @@ Route::post('/quiz-attempts/start/{quizId}', [QuizAttemptController::class, 'sta
 Route::post('/quiz-attempts/{quizAttemptId}/submit-answers', [QuizAttemptController::class, 'submitAnswers'])->middleware('auth:sanctum');
 Route::get('/quiz-attempts/{quizAttemptId}', [QuizAttemptController::class, 'getQuizAttempt']);
 Route::get('/quizzes/language/{language_id}', [QuizController::class, 'getQuizByLanguage']);
+Route::get('/achievements', [AchievementController::class, 'getAllAchievements']);
+Route::get('/achievements/{achievementId}', [AchievementController::class, 'getAchievementById']);
+Route::post('create-achievement', [AchievementController::class, 'createAchievement']);
+Route::delete('achievements/{achievementId}', [AchievementController::class, 'deleteAchievement'])->middleware('auth:sanctum', 'admin');
+Route::put('/achievements/{achievementId}',[AchievementController::class,'updateAchievement'])->middleware('auth:sanctum', 'admin');
 
 
 

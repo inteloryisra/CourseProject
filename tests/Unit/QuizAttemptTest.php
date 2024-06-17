@@ -7,6 +7,7 @@ use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\User;
 use App\Models\Plan;
+use App\Services\AchievementService;
 use App\Services\QuizAttemptService;
 use App\Models\Question;
 use App\Models\Answer;
@@ -29,7 +30,8 @@ class QuizAttemptTest extends TestCase
         $this->actingAs($user);
 
 
-        $service = new QuizAttemptService();
+        $achievement = new AchievementService();
+        $service = new QuizAttemptService($achievement);
 
         $data = ['language_id' => $language->id];
         $result = $service->startQuiz($quiz->id, $data);
@@ -42,5 +44,6 @@ class QuizAttemptTest extends TestCase
         $this->assertEquals($language->id, $result->language_id);
         $this->assertNull($result->score);
     }
+
 
 }
