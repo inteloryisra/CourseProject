@@ -17,6 +17,12 @@ use Illuminate\Support\Facades\Auth;
 
 class QuizAttemptService
 {
+    protected $achievementService;
+
+    public function __construct(AchievementService $achievementservice)
+    {
+        $this->achievementService = $achievementservice;
+    }
     public function startQuiz($quizId, $data)
     {
         $user = Auth::user();
@@ -80,6 +86,7 @@ class QuizAttemptService
             QuizAttemptAnswer::query()->insert($quizAttemptAnswers);
 
             $quizAttempt->update(['score' => $score]);
+            $this->achievementService->checkAndAwardAchievements($quizAttempt->user);
         });
 
         $result = $score >= 10 ? 'You have passed the test' : 'You have failed the test';
@@ -88,8 +95,6 @@ class QuizAttemptService
             'score' => $score
         ];
     }
-
-
     public function getQuizAttempt($quizAttemptId)
     {
         return QuizAttempt::query()->with(['quiz', 'user', 'answers'])->findOrFail($quizAttemptId);
