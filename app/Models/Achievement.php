@@ -17,7 +17,8 @@ class Achievement extends Model
      */
     protected $fillable = [
         'name',
-        'description',
+        'condition_type',
+        'condition_value'
     ];
 
     public function users() : HasMany

@@ -19,15 +19,16 @@ class AchievementTest extends TestCase
         parent::setUp();
 
 
-        Achievement::factory()->create(['name' => 'First Quiz Completed', 'description' => 'Completed your first quiz!']);
-        Achievement::factory()->create(['name' => 'High Score', 'description' => 'Scored 10 or higher on a quiz!']);
+        Achievement::factory()->create(['name' => 'First Quiz Completed',  'condition_type' => 'quiz_attempts_count','condition_value' => 1]);
+        Achievement::factory()->create(['name' => 'High Score', 'condition_type' => 'quiz_high_score','condition_value' => 10,]);
     }
 
     public function testCreateAchievement()
     {
         $data = [
             'name' => 'Test Achievement',
-            'description' => 'This is a test achievement.',
+            'condition_type' => 'test_achievement',
+            'condition_value' => 1,
         ];
 
         $response = $this->postJson('/api/create-achievement', $data);
@@ -36,7 +37,8 @@ class AchievementTest extends TestCase
 
         $this->assertDatabaseHas('achievements', [
             'name' => 'Test Achievement',
-            'description' => 'This is a test achievement.',
+            'condition_type' => 'test_achievement',
+            'condition_value' => 1,
         ]);
     }
 
@@ -47,14 +49,16 @@ class AchievementTest extends TestCase
         $achievementService = new AchievementService();
 
         $updatedData = [
-            'name' => 'Updated Achievement',
-            'description' => 'This achievement has been updated.',
+            'name' => 'Test Achievement',
+            'condition_type' => 'test_achievement',
+            'condition_value' => 1,
         ];
 
         $updatedAchievement = $achievementService->updateAchievement($achievement->id, $updatedData);
 
         $this->assertEquals($updatedData['name'], $updatedAchievement->name);
-        $this->assertEquals($updatedData['description'], $updatedAchievement->description);
+        $this->assertEquals($updatedData['condition_type'], $updatedAchievement->condition_type);
+        $this->assertEquals($updatedData['condition_value'], $updatedAchievement->condition_value);
     }
 
     public function testDeleteAchievement()

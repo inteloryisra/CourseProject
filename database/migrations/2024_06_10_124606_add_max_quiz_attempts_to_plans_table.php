@@ -9,7 +9,7 @@ class AddMaxQuizAttemptsToPlansTable extends Migration
     public function up()
     {
         Schema::table('plans', function (Blueprint $table) {
-            $table->integer('max_quiz_attempts');
+            $table->integer('max_quiz_attempts')->nullable();
         });
     }
 

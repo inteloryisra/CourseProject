@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class AchievementService
 {
 
-    public function createAcievement($data)
+    public function createAchievement($data)
     {
         return Achievement::query()->create($data);
     }
@@ -37,15 +37,30 @@ class AchievementService
     }
     public function checkAndAwardAchievements(User $user)
     {
+        $achievements = Achievement::all();
 
-        if ($user->quizAttempts()->count() > 0) {
-            $this->awardAchievement($user, 'First Quiz Completed');
-        }
 
-        if ($user->quizAttempts()->where('score', '>=', 10)->exists()) {
-            $this->awardAchievement($user, 'High Score');
+        foreach ($achievements as $achievement) {
+
+
+            $condition = $achievement->condition_value;
+
+
+            if ($achievement->condition_type == 'quiz_attempts_count') {
+                if (isset($condition) && $user->quizAttempts()->count() >= $condition) {
+                    $this->awardAchievement($user, $achievement->name);
+                }
+            }
+
+
+            if ($achievement->condition_type == 'quiz_high_score') {
+                if (isset($condition) && $user->quizAttempts()->where('score', '>=', $condition)->exists()) {
+                    $this->awardAchievement($user, $achievement->name);
+                }
+            }
         }
     }
+
 
     protected function awardAchievement(User $user, string $achievementName)
     {

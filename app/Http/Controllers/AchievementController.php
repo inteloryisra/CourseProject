@@ -15,20 +15,22 @@ class AchievementController extends Controller
     }
 
     public function createAchievement(Request $request)
-    {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'description' => 'required|string',
-        ]);
+{
+    $data = $request->validate([
+        'name' => 'required|string',
+        'condition_type' => 'required|string',
+        'condition_value' => 'required|integer',
+    ]);
 
-        return $this->achievementService->createAcievement($data);
-    }
+    return $this->achievementService->createAchievement($data);;
+}
 
     public function updateAchievement(Request $request, $achievementId)
     {
         $data = $request->validate([
             'name' => 'string',
-            'description' => 'string',
+            'condition_type'=> 'string',
+            'condition_value'=> 'integer',
         ]);
 
         return $this->achievementService->updateAchievement($achievementId, $data);

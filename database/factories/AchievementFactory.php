@@ -12,7 +12,8 @@ class AchievementFactory extends Factory
     {
         return [
             'name' => $this->faker->word,
-            'description' => $this->faker->sentence,
+            'condition_type' => $this->faker->sentence,
+            'condition_value' => $this->faker->numberBetween(1, 100),
         ];
     }
 }
