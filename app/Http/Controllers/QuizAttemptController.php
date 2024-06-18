@@ -47,10 +47,6 @@ class QuizAttemptController extends Controller
     public function getQuizAttempt($quizAttemptId)
     {
         $quizAttempt = $this->quizAttemptService->getQuizAttempt($quizAttemptId);
-
-        return response()->json([
-            'quiz_attempt' => $quizAttempt,
-            'high_score' => $quizAttempt->high_score,
-        ]);
+        return response()->json($quizAttempt, 200);
     }
 }
