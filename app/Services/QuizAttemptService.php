@@ -30,6 +30,7 @@ class QuizAttemptService
 
         $plan = Plan::query()->where('id', $user->plan_id)->first();
 
+
         if (!$plan) {
             return ['error' => 'No active plan found.'];
         }
@@ -48,7 +49,8 @@ class QuizAttemptService
             'user_id' => $user->id,
             'quiz_id' => $quizId,
             'language_id' => $data['language_id'],
-            'score' => null
+            'score' => null,
+            'high_score' =>0,
         ]);
 
         return $quizAttempt;
@@ -58,10 +60,9 @@ class QuizAttemptService
 
     public function submitAnswers($quizAttemptId, $data)
     {
-    $quizAttempt = QuizAttempt::query()->findOrFail($quizAttemptId);
-    $score = 0;
-    $quizAttemptAnswers = [];
-
+        $quizAttempt = QuizAttempt::query()->findOrFail($quizAttemptId);
+        $score = 0;
+        $quizAttemptAnswers = [];
 
         $answerIds = array_column($data['answers'], 'answer_id');
         $answers = Answer::query()->whereIn('id', $answerIds)->get()->keyBy('id');
@@ -86,15 +87,52 @@ class QuizAttemptService
             QuizAttemptAnswer::query()->insert($quizAttemptAnswers);
 
             $quizAttempt->update(['score' => $score]);
+
             $this->achievementService->checkAndAwardAchievements($quizAttempt->user);
         });
 
-        $result = $score >= 10 ? 'You have passed the test' : 'You have failed the test';
+        $previousAttempts = QuizAttempt::where('user_id', $quizAttempt->user_id)
+                                       ->where('quiz_id', $quizAttempt->quiz_id)
+                                       ->where('id', '!=', $quizAttempt->id)
+                                       ->get();
+
+        $highestScore = $previousAttempts->max('score');
+
+        $resultMessage = $score >= 10 ? 'You have passed the test' : 'You have failed the test';
+        $highScoreMessage = '';
+
+        if ($score > $highestScore) {
+            $highScoreMessage = "You have a new high score: $score";
+            $highestScore = $score;
+        }
+
+        $user = $quizAttempt->user;
+        $plan = Plan::query()->where('id', $user->plan_id)->first();
+        $attempts = QuizAttempt::where('quiz_id', $quizAttempt->quiz_id)
+                               ->where('user_id', $user->id)
+                               ->count();
+
+        if ($attempts == $plan->max_quiz_attempts) {
+            return [
+                'message' => 'You have finished all attempts.',
+                'score' => $score,
+                'highest_score' => $highestScore,
+            ];
+        }
+        if ($highScoreMessage){
+            return [
+                'message' => $resultMessage,
+                'score' => $score,
+                'high_score_message' => $highScoreMessage,
+            ];
+        }
+
         return [
-            'message' => $result,
-            'score' => $score
+            'message' => $resultMessage,
+            'score' => $score,
         ];
     }
+
     public function getQuizAttempt($quizAttemptId)
     {
         return QuizAttempt::query()->with(['quiz', 'user', 'answers'])->findOrFail($quizAttemptId);
