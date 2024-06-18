@@ -30,6 +30,7 @@ class QuizAttemptService
 
         $plan = Plan::query()->where('id', $user->plan_id)->first();
 
+
         if (!$plan) {
             return ['error' => 'No active plan found.'];
         }
@@ -48,7 +49,8 @@ class QuizAttemptService
             'user_id' => $user->id,
             'quiz_id' => $quizId,
             'language_id' => $data['language_id'],
-            'score' => null
+            'score' => null,
+            'high_score' =>0,
         ]);
 
         return $quizAttempt;
@@ -86,13 +88,46 @@ class QuizAttemptService
             QuizAttemptAnswer::query()->insert($quizAttemptAnswers);
 
             $quizAttempt->update(['score' => $score]);
+
+            $previousHighScore = QuizAttempt::where('user_id', $quizAttempt->user_id)
+                                            ->where('quiz_id', $quizAttempt->quiz_id)
+                                            ->max('high_score');
+
+            if ($score > $previousHighScore) {
+                $quizAttempt->update(['high_score' => $score]);
+            } else {
+                $quizAttempt->update(['high_score' => $previousHighScore]);
+            }
+
             $this->achievementService->checkAndAwardAchievements($quizAttempt->user);
         });
 
+        $user = $quizAttempt->user;
+        $plan = Plan::query()->where('id', $user->plan_id)->first();
+        $attempts = QuizAttempt::where('quiz_id', $quizAttempt->quiz_id)
+                               ->where('user_id', $user->id)
+                               ->count();
+                               
+
+        $highestScore = QuizAttempt::where('user_id', $user->id)
+                                   ->where('quiz_id', $quizAttempt->quiz_id)
+                                   ->max('high_score');
+
         $result = $score >= 10 ? 'You have passed the test' : 'You have failed the test';
+
+
+        if ($attempts == $plan->max_quiz_attempts) {
+            return [
+                'message' => 'You have finished all attempts.',
+                'score' => $score,
+                'highest_score' => $highestScore,
+            ];
+        }
+
         return [
             'message' => $result,
-            'score' => $score
+            'score' => $score,
+            'high_score' => $quizAttempt->high_score,
         ];
     }
     public function getQuizAttempt($quizAttemptId)

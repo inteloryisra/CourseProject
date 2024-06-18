@@ -20,6 +20,7 @@ class QuizAttempt extends Model
         'quiz_id',
         'language_id',
         'score',
+        'high_score'
     ];
     public function user()
     {
