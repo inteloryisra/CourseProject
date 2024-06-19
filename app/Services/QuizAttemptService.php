@@ -50,13 +50,10 @@ class QuizAttemptService
             'quiz_id' => $quizId,
             'language_id' => $data['language_id'],
             'score' => null,
-            'high_score' =>0,
         ]);
 
         return $quizAttempt;
     }
-
-
 
     public function submitAnswers($quizAttemptId, $data)
     {
