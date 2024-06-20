@@ -54,7 +54,7 @@ class QuizController extends Controller
         return $this->quizService->getAllQuizzes();
     }
 
-    public function getQuizByLanguage(Request $request, $language_id)
+    public function getQuizByLanguage($language_id)
 {
     $quizzes = $this->quizService->getQuizByLanguage($language_id);
 

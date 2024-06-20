@@ -18,8 +18,6 @@ class UserService
 
     }
 
-
-
     public function getAllUsers()
     {
         return User::query()->get();
@@ -69,21 +67,20 @@ class UserService
         return response()->json(['message' => 'Password updated successfully']);
     }
 
+    public function returnTockenUser()
+    {
+        return Auth::user();
+    }
+    public function choosePlan($planId)
+    {
+        $user = Auth::user();
+        $plan = Plan::findOrFail($planId);
 
-public function returnTockenUser()
-{
-    return Auth::user();
-}
-public function choosePlan($planId)
-{
-    $user = Auth::user();
-    $plan = Plan::findOrFail($planId);
+        $user->update([
+           'plan_id' => $plan->id,
+        ]);
 
-    $user->update([
-        'plan_id' => $plan->id,
-    ]);
-
-    return $user;
-}
+        return $user;
+    }
 
 }

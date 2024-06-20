@@ -58,6 +58,14 @@ class AchievementService
                     $this->awardAchievement($user, $achievement->name);
                 }
             }
+
+
+            if ($achievement->condition_type == 'consecutive_quiz_wins') {
+                $consecutiveWins = $this->getConsecutiveQuizWins($user);
+                if (isset($condition) && $consecutiveWins >= $condition) {
+                    $this->awardAchievement($user, $achievement->name);
+                }
+            }
         }
     }
 
@@ -74,6 +82,22 @@ class AchievementService
                 $user->achievements()->attach($achievement->id);
             }
         }
+    }
+
+    protected function getConsecutiveQuizWins(User $user)
+    {
+        $attempts = $user->quizAttempts()->orderBy('created_at', 'desc')->get();
+        $consecutiveWins = 0;
+
+        foreach ($attempts as $attempt) {
+            if ($attempt->score >= 10) { 
+                $consecutiveWins++;
+            } else {
+                break;
+            }
+        }
+
+        return $consecutiveWins;
     }
 
 }
