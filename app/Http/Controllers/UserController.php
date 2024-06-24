@@ -55,12 +55,19 @@ class UserController extends Controller
 
     public function loginUser(Request $request)
     {
+        $authType= $request->query("auth_type");
+        if($authType === 'GOOGLE'){
+            $data = $request->validate([
+               'access_token' => 'required|string',
+                'token_type' => 'required|string',
+            ]);
+        }else{
         $data = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
-        $user = $this->userService->loginUser($data);
+    }
+        $user = $this->userService->loginUser($data, $authType);
 
 
         return response()->json(['user' => $user]);

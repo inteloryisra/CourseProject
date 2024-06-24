@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\Plan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Http;
 
 class UserService
 {
@@ -35,8 +35,12 @@ class UserService
         return $user;
     }
 
-    public function loginUser($data)
+    public function loginUser($data, $authType)
     {
+        if($authType ==='GOOGLE'){
+            return $this->loginWithGoogle($data);
+        }
+
         $user = User::query()->where('email', $data['email'])->first();
         if (!$user || !Hash::check($data['password'], $user->password)){
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -81,6 +85,41 @@ class UserService
         ]);
 
         return $user;
+    }
+
+    public function getGoogleUser($accessToken, $tokenType)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $tokenType,
+        ])->get('https://www.googleapis.com/oauth2/v3/userinfo?access_token=' . $accessToken);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return null;
+    }
+
+    public function loginWithGoogle($data)
+    {
+        $googleUser = $this->getGoogleUser($data['access_token'], $data['token_type']);
+
+        $user = User::where('email', $googleUser['email'])->first();
+
+        if ($user) {
+            Auth::login($user);
+        } else {
+            $user = User::create([
+                'name' => $googleUser['name'],
+                'email' => $googleUser['email'],
+                'password' => Hash::make(uniqid()),
+            ]);
+
+            Auth::login($user);
+        }
+        $token = $user->createToken('auth_token_' . $googleUser['email'] )->plainTextToken;
+
+        return ['user' => $user, 'token' => $token];
     }
 
 }
