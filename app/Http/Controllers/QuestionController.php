@@ -17,9 +17,9 @@ class QuestionController extends Controller
     public function createQuestion(Request $request){
 
         $data= $request->validate([
-            'quiz_id' => 'required|integer',
+            'quiz_id' => 'required|string',
             'question' => 'required|string',
-            'language_id' => 'required|integer|exists:languages,id',
+            'language_id' => 'string|string|exists:languages,id',
         ]);
         return $this->questionService->createQuestion($data);
     }
@@ -27,9 +27,9 @@ class QuestionController extends Controller
     public function updateQuestion(Request $request, $questionId)
     {
         $data = $request->validate([
-            'quiz_id' => 'integer',
+            'quiz_id' => 'string',
             'question' => 'string',
-            'language_id' => 'integer|exists:languages,id',
+            'language_id' => 'string|exists:languages,id',
         ]);
 
         return $this->questionService->updateQuestion($questionId, $data);

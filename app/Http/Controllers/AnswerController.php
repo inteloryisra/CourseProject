@@ -17,10 +17,10 @@ class AnswerController extends Controller
     public function createAnswer(Request $request)
     {
         $data = $request->validate([
-            'question_id' => 'required|integer',
+            'question_id' => 'required|string',
             'answer' => 'required|string',
             'is_correct' => 'required|boolean',
-            'language_id' => 'required|integer|exists:languages,id',
+            'language_id' => 'required|string|exists:languages,id',
         ]);
 
         return $this->answerService->createAnswer($data);
@@ -29,10 +29,10 @@ class AnswerController extends Controller
     public function updateAnswer(Request $request, $answerId)
     {
         $data = $request->validate([
-            'question_id' => 'integer',
+            'question_id' => 'string',
             'answer' => 'string',
             'is_correct' => 'boolean',
-            'language_id' => 'integer|exists:languages,id',
+            'language_id' => 'string|exists:languages,id',
         ]);
 
         return $this->answerService->updateAnswer($answerId, $data);

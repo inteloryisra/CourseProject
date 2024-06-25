@@ -12,14 +12,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('answers', function (Blueprint $table) {
+        Schema::create('quiz_attempt_answers', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('uuid_generate_v4()'));
+            $table->uuid('quiz_attempt_id');
             $table->uuid('question_id');
-            $table->text('answer');
-            $table->boolean('is_correct');
+            $table->uuid('answer_id');
             $table->timestamps();
 
+            $table->foreign('quiz_attempt_id')->references('id')->on('quiz_attempts')->onDelete('cascade');
             $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
+            $table->foreign('answer_id')->references('id')->on('answers')->onDelete('cascade');
         });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('answers');
+        Schema::dropIfExists('quiz_attempt_answers');
     }
 };

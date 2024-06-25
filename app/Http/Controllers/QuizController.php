@@ -20,7 +20,7 @@ class QuizController extends Controller
         $data = $request->validate([
             'title' => 'required|string',
             'description' => 'required|string',
-            'language_id' => 'required|integer|exists:languages,id',
+            'language_id' => 'required|string|exists:languages,id',
         ]);
 
         return $this->quizService->createQuiz($data);
@@ -32,7 +32,7 @@ class QuizController extends Controller
         $data= $request->validate([
             'title'=> 'string',
             'description'=> 'string',
-            'language_id' => 'integer|exists:languages,id',
+            'language_id' => 'string|exists:languages,id',
         ]);
 
         return $this->quizService->updateQuiz($quizId, $data);
