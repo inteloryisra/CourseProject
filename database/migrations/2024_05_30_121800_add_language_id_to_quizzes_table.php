@@ -12,9 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('quizzes', function (Blueprint $table) {
-            $table->uuid('language_id')->nullable();
-
-            $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade');
+            $table->foreignUuid('language_id')->references('id')->on('languages')->onDelete('cascade');
         });
     }
 

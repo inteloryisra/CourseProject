@@ -14,12 +14,12 @@ return new class extends Migration
     {
         Schema::create('answers', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('uuid_generate_v4()'));
-            $table->uuid('question_id');
+            $table->foreignUuid('question_id')->references('id')->on('questions')->onDelete('cascade');
             $table->text('answer');
             $table->boolean('is_correct');
             $table->timestamps();
 
-            $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
+
         });
     }
 

@@ -14,12 +14,9 @@ return new class extends Migration
     {
         Schema::create('user_achievements', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('uuid_generate_v4()'));
-            $table->uuid('user_id')->nullable();
-            $table->uuid('achievement_id')->nullable();
+            $table->foreignUuid('user_id')->references('id')->on('users')->onDelete('cascade')->nullable();
+            $table->foreignUuid('achievement_id')->references('id')->on('achievements')->onDelete('cascade')->nullable();
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('achievement_id')->references('id')->on('achievements')->onDelete('cascade');
         });
     }
 

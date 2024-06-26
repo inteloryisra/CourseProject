@@ -14,15 +14,11 @@ return new class extends Migration
     {
         DB::transaction(function () {
             Schema::table('questions', function (Blueprint $table) {
-                $table->uuid('language_id')->nullable();
-
-                $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade');
+                $table->foreignUuid('language_id')->references('id')->on('languages')->onDelete('cascade');
             });
 
             Schema::table('answers', function (Blueprint $table) {
-                $table->uuid('language_id')->nullable();
-
-                $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade');
+                $table->foreignUuid('language_id')->references('id')->on('languages')->onDelete('cascade');
             });
         });
     }

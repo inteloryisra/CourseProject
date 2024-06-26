@@ -14,14 +14,12 @@ return new class extends Migration
     {
         Schema::create('quiz_attempt_answers', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('uuid_generate_v4()'));
-            $table->uuid('quiz_attempt_id');
-            $table->uuid('question_id');
-            $table->uuid('answer_id');
+            $table->foreignUuid('quiz_attempt_id')->references('id')->on('quiz_attempts')->onDelete('cascade');
+            $table->foreignUuid('question_id')->references('id')->on('questions')->onDelete('cascade');
+            $table->foreignUuid('answer_id')->references('id')->on('answers')->onDelete('cascade');
             $table->timestamps();
 
-            $table->foreign('quiz_attempt_id')->references('id')->on('quiz_attempts')->onDelete('cascade');
-            $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
-            $table->foreign('answer_id')->references('id')->on('answers')->onDelete('cascade');
+
         });
     }
 
