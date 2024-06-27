@@ -103,4 +103,23 @@ public function choosePlan(Request $request, $planId)
     return response()->json(['message' => 'Plan chosen successfully', 'user' => $user]);
 }
 
+public function requestPasswordReset(Request $request)
+{
+    $data = $request->validate([
+        'email' => 'required|email',
+    ]);
+
+    return $this->userService->requestPasswordReset($data['email']);
+}
+
+public function resetPassword(Request $request)
+{
+    $data = $request->validate([
+        'token' => 'required|string',
+        'newPassword' => 'required|string|max:255',
+    ]);
+
+    return $this->userService->resetPassword($data['token'], $data['newPassword']);
+}
+
 }

@@ -7,6 +7,10 @@ use App\Models\Plan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use App\Mail\PasswordResetMail;
+use App\Models\ForgetPasswordToken;
 
 class UserService
 {
@@ -120,6 +124,41 @@ class UserService
         $token = $user->createToken('auth_token_' . $googleUser['email'] )->plainTextToken;
 
         return ['user' => $user, 'token' => $token];
+    }
+
+    public function requestPasswordReset($email)
+    {
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $token = Str::random(64);
+        ForgetPasswordToken::create([
+            'email' => $email,
+            'token' => $token,
+        ]);
+
+        Mail::to($email)->send(new PasswordResetMail($token));
+
+        return response()->json(['message' => 'Password reset email sent']);
+    }
+
+    public function resetPassword($token, $newPassword)
+    {
+        $record = ForgetPasswordToken::where('token', $token)->first();
+        if (!$record) {
+            return response()->json(['error' => 'Invalid token'], 400);
+        }
+
+        $user = User::where('email', $record->email)->first();
+        $user->update([
+            'password' => Hash::make($newPassword),
+        ]);
+
+        $record->delete();
+
+        return response()->json(['message' => 'Password reset successfully']);
     }
 
 }
