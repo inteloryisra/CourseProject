@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Mail\PasswordResetMail;
 use App\Models\ForgetPasswordToken;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class UserService
 {
@@ -128,37 +130,65 @@ class UserService
 
     public function requestPasswordReset($email)
     {
-        $user = User::where('email', $email)->first();
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
+        $user = User::where('email', $email)->firstOrFail();
+
+        $token = $user->forget_password_tokens()->orderBy('created_at', 'desc')->first();
+
+        if ($token) {
+            $expiryTime = Carbon::parse($token->created_at)->addMinutes(5);
+            if ($expiryTime->isFuture()) {
+                return response()->json(['message' => 'A password reset email has already been sent. Please check your inbox.'], 400);
+            }
+
+            $token->delete();
         }
 
-        $token = Str::random(64);
-        ForgetPasswordToken::create([
-            'email' => $email,
-            'token' => $token,
+        $hashedToken = Hash::make(Str::uuid());
+
+        $user->forget_password_tokens()->create([
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'token' => $hashedToken,
         ]);
 
-        Mail::to($email)->send(new PasswordResetMail($token));
+        Mail::to($email)->send(new PasswordResetMail($hashedToken));
 
         return response()->json(['message' => 'Password reset email sent']);
     }
 
-    public function resetPassword($token, $newPassword)
-    {
-        $record = ForgetPasswordToken::where('token', $token)->first();
-        if (!$record) {
-            return response()->json(['error' => 'Invalid token'], 400);
-        }
 
-        $user = User::where('email', $record->email)->first();
-        $user->update([
-            'password' => Hash::make($newPassword),
-        ]);
+    public function resetPassword($email, $token, $newPassword, $passwordConfirmation)
+{
+    $user = User::where('email', $email)->firstOrFail();
 
-        $record->delete();
+    $passwordReset = ForgetPasswordToken::where('user_id', $user->id)
+        ->where('token', $token)
+        ->orderBy('created_at', 'desc')
+        ->first();
 
-        return response()->json(['message' => 'Password reset successfully']);
+
+    if (!$passwordReset) {
+        return response()->json(['error' => 'Invalid token'], 400);
     }
+
+    $createdAt = Carbon::parse($passwordReset->created_at);
+
+    if (Carbon::now()->greaterThan($createdAt->addMinutes(5))) {
+        $passwordReset->delete();
+        return response()->json(['error' => 'Token expired'], 400);
+    }
+
+    if ($newPassword !== $passwordConfirmation) {
+        return response()->json(['error' => 'Password confirmation does not match'], 400);
+    }
+
+    $user->update([
+        'password' => Hash::make($newPassword),
+    ]);
+
+    $passwordReset->delete();
+
+    return response()->json(['message' => 'Password reset successfully']);
+}
 
 }

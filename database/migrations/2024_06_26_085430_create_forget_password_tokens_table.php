@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('forget_password_tokens', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('uuid_generate_v4()'));
+            $table->foreignUuid('user_id')->references('id')->on('users')->onDelete('cascade')->nullable();
             $table->string('email')->index();
             $table->string('token')->unique();
             $table->timestamps();
