@@ -42,6 +42,7 @@ class User extends Authenticatable
         'password',
         'role',
         'plan_id',
+        'email_verified_at',
     ];
 
     /**
@@ -84,4 +85,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ForgetPasswordToken::class);
     }
+
+    public function emailVerificationTokens(): HasMany
+{
+    return $this->hasMany(EmailVerificationToken::class);
+}
 }
