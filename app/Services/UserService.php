@@ -132,7 +132,7 @@ class UserService
     {
         $user = User::where('email', $email)->firstOrFail();
 
-        $token = $user->forget_password_tokens()->orderBy('created_at', 'desc')->first();
+        $token = $user->forgetPasswordTokens()->orderBy('created_at', 'desc')->first();
 
         if ($token) {
             $expiryTime = Carbon::parse($token->created_at)->addMinutes(5);
@@ -145,7 +145,7 @@ class UserService
 
         $hashedToken = Hash::make(Str::uuid());
 
-        $user->forget_password_tokens()->create([
+        $user->forgetPasswordTokens()->create([
             'user_id' => $user->id,
             'email' => $user->email,
             'token' => $hashedToken,
@@ -157,12 +157,12 @@ class UserService
     }
 
 
-    public function resetPassword($email, $token, $newPassword, $passwordConfirmation)
+    public function resetPassword($data)
 {
-    $user = User::where('email', $email)->firstOrFail();
+    $user = User::where('email', $data['email'])->firstOrFail();
 
     $passwordReset = ForgetPasswordToken::where('user_id', $user->id)
-        ->where('token', $token)
+        ->where('token', $data['token'])
         ->orderBy('created_at', 'desc')
         ->first();
 
@@ -178,12 +178,9 @@ class UserService
         return response()->json(['error' => 'Token expired'], 400);
     }
 
-    if ($newPassword !== $passwordConfirmation) {
-        return response()->json(['error' => 'Password confirmation does not match'], 400);
-    }
 
     $user->update([
-        'password' => Hash::make($newPassword),
+        'password' => Hash::make($data['newPassword']),
     ]);
 
     $passwordReset->delete();

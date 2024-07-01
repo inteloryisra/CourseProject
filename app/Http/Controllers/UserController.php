@@ -117,16 +117,10 @@ public function resetPassword(Request $request)
     $data = $request->validate([
         'email' => 'required|email',
         'token' => 'required|string',
-        'newPassword' => 'required|string|min:6',
-        'newPassword_confirmation' => 'required|string|same:newPassword',
+        'newPassword' => 'required|string|confirmed|min:6',
     ]);
 
-    return $this->userService->resetPassword(
-        $data['email'],
-        $data['token'],
-        $data['newPassword'],
-        $data['newPassword_confirmation']
-    );
+    return $this->userService->resetPassword($data);
 }
 
 }

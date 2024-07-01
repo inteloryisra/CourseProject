@@ -80,7 +80,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Achievement::class, 'user_achievements');
     }
 
-    public function forget_password_tokens(): HasMany
+    public function forgetPasswordTokens(): HasMany
     {
         return $this->hasMany(ForgetPasswordToken::class);
     }
