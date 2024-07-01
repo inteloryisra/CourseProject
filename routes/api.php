@@ -63,6 +63,9 @@ Route::post('create-achievement', [AchievementController::class, 'createAchievem
 Route::delete('achievements/{achievementId}', [AchievementController::class, 'deleteAchievement'])->middleware('auth:sanctum', 'admin');
 Route::put('/achievements/{achievementId}',[AchievementController::class,'updateAchievement'])->middleware('auth:sanctum', 'admin');
 
+Route::post('/request-password-reset', [UserController::class, 'requestPasswordReset']);
+Route::post('/reset-password', [UserController::class, 'resetPassword']);
+
 
 
 

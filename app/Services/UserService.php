@@ -7,6 +7,12 @@ use App\Models\Plan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use App\Mail\PasswordResetMail;
+use App\Models\ForgetPasswordToken;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class UserService
 {
@@ -121,5 +127,65 @@ class UserService
 
         return ['user' => $user, 'token' => $token];
     }
+
+    public function requestPasswordReset($email)
+    {
+        $user = User::where('email', $email)->firstOrFail();
+
+        $token = $user->forgetPasswordTokens()->orderBy('created_at', 'desc')->first();
+
+        if ($token) {
+            $expiryTime = Carbon::parse($token->created_at)->addMinutes(5);
+            if ($expiryTime->isFuture()) {
+                return response()->json(['message' => 'A password reset email has already been sent. Please check your inbox.'], 400);
+            }
+
+            $token->delete();
+        }
+
+        $hashedToken = Hash::make(Str::uuid());
+
+        $user->forgetPasswordTokens()->create([
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'token' => $hashedToken,
+        ]);
+
+        Mail::to($email)->send(new PasswordResetMail($hashedToken));
+
+        return response()->json(['message' => 'Password reset email sent']);
+    }
+
+
+    public function resetPassword($data)
+{
+    $user = User::where('email', $data['email'])->firstOrFail();
+
+    $passwordReset = ForgetPasswordToken::where('user_id', $user->id)
+        ->where('token', $data['token'])
+        ->orderBy('created_at', 'desc')
+        ->first();
+
+
+    if (!$passwordReset) {
+        return response()->json(['error' => 'Invalid token'], 400);
+    }
+
+    $createdAt = Carbon::parse($passwordReset->created_at);
+
+    if (Carbon::now()->greaterThan($createdAt->addMinutes(5))) {
+        $passwordReset->delete();
+        return response()->json(['error' => 'Token expired'], 400);
+    }
+
+
+    $user->update([
+        'password' => Hash::make($data['newPassword']),
+    ]);
+
+    $passwordReset->delete();
+
+    return response()->json(['message' => 'Password reset successfully']);
+}
 
 }
