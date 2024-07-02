@@ -29,6 +29,7 @@ Route::get('/users', [UserController::class,'getAllUsers']);
 Route::get('/users/{userId}', [UserController::class, 'getUserById']);
 Route::post('/register', [UserController::class, 'registerUser']);
 Route::put('/users/{userId}', [UserController::class, 'editUser']);
+Route::delete('/users/{userId}', [UserController::class, 'deleteUser']);
 Route::post('/login', [UserController::class, 'loginUser']);
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('/me', [UserController::class, 'returnTockenUser'])->middleware('auth:sanctum');
@@ -37,7 +38,6 @@ Route::get('/plans', [PlanController::class,'getAllPlans']);
 Route::post('/create-plan', [PlanController::class, 'createPlan'])->middleware('auth:sanctum', 'admin');
 Route::delete('/plans/{planId}', [PlanController::class, 'deletePlan'])->middleware('auth:sanctum', 'admin');
 Route::post('/users/choose-plan/{planId}', [UserController::class, 'choosePlan'])->middleware('auth:sanctum');
-
 Route::get('/quizzes',[QuizController::class,'getAllQuizzes']);
 Route::post('/create-quiz',[QuizController::class,'createQuiz'])->middleware('auth:sanctum', 'admin');
 Route::put('/quizzes/{quizId}',[QuizController::class,'updateQuiz'])->middleware('auth:sanctum', 'admin');
@@ -62,10 +62,10 @@ Route::get('/achievements/{achievementId}', [AchievementController::class, 'getA
 Route::post('create-achievement', [AchievementController::class, 'createAchievement']);
 Route::delete('achievements/{achievementId}', [AchievementController::class, 'deleteAchievement'])->middleware('auth:sanctum', 'admin');
 Route::put('/achievements/{achievementId}',[AchievementController::class,'updateAchievement'])->middleware('auth:sanctum', 'admin');
-
 Route::post('/request-password-reset', [UserController::class, 'requestPasswordReset']);
 Route::post('/reset-password', [UserController::class, 'resetPassword']);
-
+Route::post('/send-verification-email', [UserController::class, 'sendVerificationEmail']);
+Route::post('/verify-email', [UserController::class, 'verifyEmail']);
 
 
 

@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Mail\PasswordResetMail;
 use App\Models\ForgetPasswordToken;
+use App\Models\EmailVerificationToken;
+use App\Mail\VerificationEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -20,8 +22,9 @@ class UserService
     public function registerUser($data)
     {
 
-        return User::query()->create($data);
-
+        $user = User::query()->create($data);
+        $this->sendVerificationEmail($user->email);
+        return $user;
     }
 
     public function getAllUsers()
@@ -41,6 +44,11 @@ class UserService
         return $user;
     }
 
+    public function deleteUser($userId)
+    {
+       return User::destroy($userId);
+    }
+
     public function loginUser($data, $authType)
     {
         if($authType ==='GOOGLE'){
@@ -51,6 +59,11 @@ class UserService
         if (!$user || !Hash::check($data['password'], $user->password)){
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
+        if (!$user->email_verified_at) {
+            return response()->json(['error' => 'Email not verified. Please check your inbox.'], 403);
+        }
+
         $token = $user->createToken('AuthToken')->plainTextToken;
 
         return ['user' => $user, 'token' => $token];
@@ -186,6 +199,65 @@ class UserService
     $passwordReset->delete();
 
     return response()->json(['message' => 'Password reset successfully']);
+}
+
+public function sendVerificationEmail($email)
+{
+    $user = User::where('email', $email)->firstOrFail();
+
+    $token = $user->emailVerificationTokens()->orderBy('created_at', 'desc')->first();
+
+    if ($token) {
+        $expiryTime = Carbon::parse($token->created_at)->addMinutes(5);
+        if ($expiryTime->isFuture()) {
+            return response()->json(['message' => 'A verification email has already been sent. Please check your inbox.'], 400);
+        }
+
+        $token->delete();
+    }
+
+    $verificationToken = Hash::make(Str::uuid());
+
+    $user->emailVerificationTokens()->create([
+        'token' => $verificationToken,
+    ]);
+
+    Mail::to($email)->send(new VerificationEmail($verificationToken));
+
+    return response()->json(['message' => 'Verification email sent']);
+}
+
+public function verifyEmail($data)
+{
+    $user = User::where('email', $data['email'])->firstOrFail();
+
+    if ($user->email_verified_at) {
+        return response()->json(['message' => 'Email already verified'], 400);
+    }
+
+    $emailVerificationToken = EmailVerificationToken::where('user_id', $user->id)
+        ->where('token', $data['token'])
+        ->orderBy('created_at', 'desc')
+        ->first();
+
+    if (!$emailVerificationToken) {
+        return response()->json(['error' => 'Invalid token'], 400);
+    }
+
+    $createdAt = Carbon::parse($emailVerificationToken->created_at);
+
+    if (Carbon::now()->greaterThan($createdAt->addMinutes(60))) {
+        $emailVerificationToken->delete();
+        return response()->json(['error' => 'Token expired'], 400);
+    }
+
+    $user->update([
+        'email_verified_at' => Carbon::now(),
+    ]);
+
+    $emailVerificationToken->delete();
+
+    return response()->json(['message' => 'Email verified successfully']);
 }
 
 }

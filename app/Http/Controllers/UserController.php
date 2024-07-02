@@ -53,6 +53,11 @@ class UserController extends Controller
         return $this->userService->editUser($userId, $data);
     }
 
+    public function deleteUser($userId)
+    {
+        $this->userService->deleteUser($userId);
+    }
+
     public function loginUser(Request $request)
     {
         $authType= $request->query("auth_type");
@@ -121,6 +126,25 @@ public function resetPassword(Request $request)
     ]);
 
     return $this->userService->resetPassword($data);
+}
+
+public function sendVerificationEmail(Request $request)
+{
+    $data = $request->validate([
+        'email' => 'required|email',
+    ]);
+
+    return $this->userService->sendVerificationEmail($data);
+}
+
+public function verifyEmail(Request $request)
+{
+    $data = $request->validate([
+        'email' => 'required|email',
+        'token' => 'required|string',
+    ]);
+
+    return $this->userService->verifyEmail($data);
 }
 
 }
