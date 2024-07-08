@@ -67,8 +67,6 @@ Route::post('/reset-password', [UserController::class, 'resetPassword']);
 Route::post('/send-verification-email', [UserController::class, 'sendVerificationEmail']);
 Route::post('/verify-email', [UserController::class, 'verifyEmail']);
 Route::post('/enable-2fa', [UserController::class, 'enable2FA'])->middleware('auth:sanctum');
-Route::post('/generate-otp', [UserController::class, 'generateOtp'])->middleware('auth:sanctum');
-Route::post('/verify-otp', [UserController::class, 'verifyOtp'])->middleware('auth:sanctum');
 
 
 

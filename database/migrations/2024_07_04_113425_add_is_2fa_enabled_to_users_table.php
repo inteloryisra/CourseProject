@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->boolean('is_2fa_enabled')->default('false');
             $table->string('otp')->nullable();
+            $table->timestamp('otp_expires_at')->nullable();
         });
     }
 
@@ -25,6 +26,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('is_2fa_enabled');
             $table->dropColumn('otp');
+            $table->dropColumn('otp_expires_at');
         });
     }
 };

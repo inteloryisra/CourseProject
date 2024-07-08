@@ -65,10 +65,10 @@ class UserService
             return response()->json(['error' => 'Email not verified. Please check your inbox.'], 403);
         }
 
-        if ($user->is_2fa_enabled) {
-            $this->generateOtp($user);
-            return response()->json(['message' => 'OTP sent to your email.']);
-        }
+        $is2faResult = $this->is2faEnabled($user, $data['otp'] ?? null);
+          if ($is2faResult !== true) {
+            return $is2faResult;
+             }
 
         $token = $user->createToken('AuthToken')->plainTextToken;
 
@@ -271,27 +271,38 @@ public function enable2FA($userId)
         $user = User::findOrFail($userId);
         $user->update(['is_2fa_enabled' => true]);
 
-        return $this->generateOtp($user);
+        return $this->sendOtp($user);
     }
-    public function generateOtp($user)
+    public function sendOtp($user)
     {
-        $otp = Str::random(4);
-        $user->update(['otp' => $otp]);
+        $otp = rand(100000, 999999);
+        $user->update([
+            'otp' =>  bcrypt($otp),
+            'otp_expires_at' => Carbon::now()->addMinutes(5),
+        ]);
 
         Mail::to($user->email)->send(new OtpMail($otp));
 
         return response()->json(['message' => 'OTP sent to your email.']);
     }
-    public function verifyOtp($data)
-    {
-        $user = User::where('email', $data['email'])->firstOrFail();
-
-        if ($user->otp === $data['otp']) {
-            $user->update(['otp' => null]);
-            return response()->json(['message' => 'OTP verified successfully.']);
+ 
+    public function is2faEnabled($user, $otp = null)
+{
+    if ($user->is_2fa_enabled) {
+        if ($otp) {
+            if (Hash::check($otp, $user->otp) && Carbon::now()->lessThanOrEqualTo($user->otp_expires_at)) {
+                $user->update(['otp' => null, 'otp_expires_at' => null]);
+                return true;
+            } else {
+                return response()->json(['error' => 'Invalid or expired OTP'], 400);
+            }
+        } else {
+            $this->sendOtp($user);
+            return response()->json(['message' => 'OTP sent to your email.']);
         }
-
-        return response()->json(['error' => 'Invalid OTP'], 400);
     }
+
+    return true;
+}
 
 }

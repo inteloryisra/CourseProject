@@ -44,7 +44,8 @@ class User extends Authenticatable
         'plan_id',
         'email_verified_at',
         'is_2fa_enabled',
-        'otp'
+        'otp',
+        'otp_expires_at',
     ];
 
     /**
