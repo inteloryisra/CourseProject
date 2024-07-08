@@ -70,6 +70,7 @@ class UserController extends Controller
         $data = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+            'otp' => 'nullable|string',
         ]);
     }
         $user = $this->userService->loginUser($data, $authType);
@@ -145,6 +146,12 @@ public function verifyEmail(Request $request)
     ]);
 
     return $this->userService->verifyEmail($data);
+}
+
+public function enable2FA(Request $request)
+{
+
+    return $this->userService->enable2FA();
 }
 
 }

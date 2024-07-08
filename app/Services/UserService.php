@@ -13,6 +13,7 @@ use App\Mail\PasswordResetMail;
 use App\Models\ForgetPasswordToken;
 use App\Models\EmailVerificationToken;
 use App\Mail\VerificationEmail;
+use App\Mail\OtpMail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -63,6 +64,11 @@ class UserService
         if (!$user->email_verified_at) {
             return response()->json(['error' => 'Email not verified. Please check your inbox.'], 403);
         }
+
+        $is2faResult = $this->is2faEnabled($user, $data['otp'] ?? null);
+          if ($is2faResult !== true) {
+            return $is2faResult;
+             }
 
         $token = $user->createToken('AuthToken')->plainTextToken;
 
@@ -258,6 +264,46 @@ public function verifyEmail($data)
     $emailVerificationToken->delete();
 
     return response()->json(['message' => 'Email verified successfully']);
+}
+
+public function enable2FA()
+    {
+        $user = Auth::user();
+        $user = User::findOrFail($user->id);
+        $user->update(['is_2fa_enabled' => true]);
+
+        return $this->sendOtp($user);
+    }
+    public function sendOtp($user)
+    {
+        $otp = rand(100000, 999999);
+        $user->update([
+            'otp' =>  bcrypt($otp),
+            'otp_expires_at' => Carbon::now()->addMinutes(5),
+        ]);
+
+        Mail::to($user->email)->send(new OtpMail($otp));
+
+        return response()->json(['message' => 'OTP sent to your email.']);
+    }
+
+    public function is2faEnabled($user, $otp = null)
+{
+    if ($user->is_2fa_enabled) {
+        if ($otp) {
+            if (Hash::check($otp, $user->otp) && Carbon::now()->lessThanOrEqualTo($user->otp_expires_at)) {
+                $user->update(['otp' => null, 'otp_expires_at' => null]);
+                return true;
+            } else {
+                return response()->json(['error' => 'Invalid or expired OTP'], 400);
+            }
+        } else {
+            $this->sendOtp($user);
+            return response()->json(['message' => 'OTP sent to your email.']);
+        }
+    }
+
+    return true;
 }
 
 }

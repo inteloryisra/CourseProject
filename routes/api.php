@@ -66,6 +66,7 @@ Route::post('/request-password-reset', [UserController::class, 'requestPasswordR
 Route::post('/reset-password', [UserController::class, 'resetPassword']);
 Route::post('/send-verification-email', [UserController::class, 'sendVerificationEmail']);
 Route::post('/verify-email', [UserController::class, 'verifyEmail']);
+Route::put('/enable-2fa', [UserController::class, 'enable2FA'])->middleware('auth:sanctum');
 
 
 
