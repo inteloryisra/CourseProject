@@ -43,6 +43,8 @@ class User extends Authenticatable
         'role',
         'plan_id',
         'email_verified_at',
+        'is_2fa_enabled',
+        'otp'
     ];
 
     /**

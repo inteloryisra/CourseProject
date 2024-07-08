@@ -13,6 +13,7 @@ use App\Mail\PasswordResetMail;
 use App\Models\ForgetPasswordToken;
 use App\Models\EmailVerificationToken;
 use App\Mail\VerificationEmail;
+use App\Mail\OtpMail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -62,6 +63,11 @@ class UserService
 
         if (!$user->email_verified_at) {
             return response()->json(['error' => 'Email not verified. Please check your inbox.'], 403);
+        }
+
+        if ($user->is_2fa_enabled) {
+            $this->generateOtp($user);
+            return response()->json(['message' => 'OTP sent to your email.']);
         }
 
         $token = $user->createToken('AuthToken')->plainTextToken;
@@ -259,5 +265,33 @@ public function verifyEmail($data)
 
     return response()->json(['message' => 'Email verified successfully']);
 }
+
+public function enable2FA($userId)
+    {
+        $user = User::findOrFail($userId);
+        $user->update(['is_2fa_enabled' => true]);
+
+        return $this->generateOtp($user);
+    }
+    public function generateOtp($user)
+    {
+        $otp = Str::random(4);
+        $user->update(['otp' => $otp]);
+
+        Mail::to($user->email)->send(new OtpMail($otp));
+
+        return response()->json(['message' => 'OTP sent to your email.']);
+    }
+    public function verifyOtp($data)
+    {
+        $user = User::where('email', $data['email'])->firstOrFail();
+
+        if ($user->otp === $data['otp']) {
+            $user->update(['otp' => null]);
+            return response()->json(['message' => 'OTP verified successfully.']);
+        }
+
+        return response()->json(['error' => 'Invalid OTP'], 400);
+    }
 
 }

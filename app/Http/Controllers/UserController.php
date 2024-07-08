@@ -147,4 +147,26 @@ public function verifyEmail(Request $request)
     return $this->userService->verifyEmail($data);
 }
 
+public function enable2FA(Request $request)
+{
+    $user = Auth::user();
+    return $this->userService->enable2FA($user->id);
+}
+
+public function generateOtp(Request $request)
+{
+    $user = Auth::user();
+    return $this->userService->generateOtp($user);
+}
+
+public function verifyOtp(Request $request)
+{
+    $data = $request->validate([
+        'email' => 'required|email',
+        'otp' => 'required|string',
+    ]);
+
+    return $this->userService->verifyOtp($data);
+}
+
 }
