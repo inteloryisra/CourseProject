@@ -266,9 +266,10 @@ public function verifyEmail($data)
     return response()->json(['message' => 'Email verified successfully']);
 }
 
-public function enable2FA($userId)
+public function enable2FA()
     {
-        $user = User::findOrFail($userId);
+        $user = Auth::user();
+        $user = User::findOrFail($user->id);
         $user->update(['is_2fa_enabled' => true]);
 
         return $this->sendOtp($user);
@@ -285,7 +286,7 @@ public function enable2FA($userId)
 
         return response()->json(['message' => 'OTP sent to your email.']);
     }
- 
+
     public function is2faEnabled($user, $otp = null)
 {
     if ($user->is_2fa_enabled) {

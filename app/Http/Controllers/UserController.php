@@ -150,8 +150,8 @@ public function verifyEmail(Request $request)
 
 public function enable2FA(Request $request)
 {
-    $user = Auth::user();
-    return $this->userService->enable2FA($user->id);
+
+    return $this->userService->enable2FA();
 }
 
 }
