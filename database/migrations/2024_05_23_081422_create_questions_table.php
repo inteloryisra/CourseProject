@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('id')->primary()->default(DB::raw('uuid_generate_v4()'));
             $table->foreignUuid('quiz_id')->references('id')->on('quizzes')->onDelete('cascade');
             $table->text('question');
+            $table->foreignUuid('language_id')->references('id')->on('languages')->onDelete('cascade');
             $table->timestamps();
 
 

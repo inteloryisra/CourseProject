@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignUuid('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreignUuid('quiz_id')->references('id')->on('quizzes')->onDelete('cascade');
             $table->integer('score')->nullable();
+            $table->foreignUuid('language_id')->references('id')->on('languages')->onDelete('cascade')->nullable();
             $table->timestamps();
 
 

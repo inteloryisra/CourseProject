@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignUuid('question_id')->references('id')->on('questions')->onDelete('cascade');
             $table->text('answer');
             $table->boolean('is_correct');
+            $table->foreignUuid('language_id')->references('id')->on('languages')->onDelete('cascade');
             $table->timestamps();
 
 
