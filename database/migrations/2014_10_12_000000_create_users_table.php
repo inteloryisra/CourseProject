@@ -18,6 +18,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('role')->nullable();
+            $table->uuid('plan_id')->nullable();
+            $table->foreign('plan_id')->references('id')->on('plans')->onDelete('cascade')->nullable();
+            $table->boolean('is_2fa_enabled')->default('false');
+            $table->string('otp')->nullable();
+            $table->timestamp('otp_expires_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

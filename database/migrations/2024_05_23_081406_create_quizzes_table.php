@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('id')->primary()->default(DB::raw('uuid_generate_v4()'));
             $table->string('title');
             $table->text('description');
+            $table->foreignUuid('language_id')->references('id')->on('languages')->onDelete('cascade');
             $table->timestamps();
         });
     }
