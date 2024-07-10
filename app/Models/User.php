@@ -24,7 +24,7 @@ class User extends Authenticatable implements Auditable
      *
      * @var string
      */
-    protected $keyType = 'uuid';
+    protected $keyType = 'string';
 
     /**
      * Indicates if the IDs are auto-incrementing.

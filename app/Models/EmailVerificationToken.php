@@ -6,13 +6,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use OwenIt\Auditing\Contracts\Auditable;
-use OwenIt\Auditing\Auditable as AuditableTrait;
 
 
-class EmailverificationToken extends Model implements Auditable
+class EmailverificationToken extends Model
 {
-   use HasFactory, AuditableTrait;
+   use HasFactory;
 
 
    protected $fillable = [
