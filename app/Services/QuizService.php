@@ -56,5 +56,6 @@ class QuizService
         $category = Category::findOrFail($categoryId);
         $quizzes = $category->quizzes()->get();
         return $quizzes;
+        
     }
 }
