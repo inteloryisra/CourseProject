@@ -7,6 +7,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\QuizAttemptController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -67,6 +68,15 @@ Route::post('/reset-password', [UserController::class, 'resetPassword']);
 Route::post('/send-verification-email', [UserController::class, 'sendVerificationEmail']);
 Route::post('/verify-email', [UserController::class, 'verifyEmail']);
 Route::put('/enable-2fa', [UserController::class, 'enable2FA'])->middleware('auth:sanctum');
+Route::get('/categories', [CategoryController::class, 'getAllCategories']);
+Route::post('/categories', [CategoryController::class, 'store']);
+Route::get('/categories/{id}', [CategoryController::class, 'show']);
+Route::put('/categories/{id}', [CategoryController::class, 'update']);
+Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+Route::post('/quizzes/{quizId}/attach-categories', [QuizController::class, 'attachCategories']);
+Route::post('/quizzes/{quizId}/detach-categories', [QuizController::class, 'detachCategories']);
+Route::get('/categories/{categoryId}/quizzes', [QuizController::class, 'getQuizzesByCategory']);
+
 
 
 
