@@ -42,8 +42,13 @@ class Quiz extends Model implements Auditable
     }
 
     public function attempts()
-{
-    return $this->hasMany(QuizAttempt::class);
-}
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
 
 }

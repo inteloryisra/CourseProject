@@ -55,10 +55,39 @@ class QuizController extends Controller
     }
 
     public function getQuizByLanguage($language_id)
-{
-    $quizzes = $this->quizService->getQuizByLanguage($language_id);
+    {
+        $quizzes = $this->quizService->getQuizByLanguage($language_id);
 
-    return response()->json($quizzes, 200);
-}
+        return response()->json($quizzes, 200);
+    }
+    public function attachCategories(Request $request, $quizId)
+    {
+        $data = $request->validate([
+            'category_ids' => 'required|array',
+            'category_ids.*' => 'exists:categories,id',
+        ]);
+
+        $this->quizService->attachCategories($quizId, $data['category_ids']);
+
+        return response()->json(['message' => 'Categories attached successfully'], 200);
+    }
+
+    public function detachCategories(Request $request, $quizId)
+    {
+        $data = $request->validate([
+            'category_ids' => 'required|array',
+            'category_ids.*' => 'exists:categories,id',
+        ]);
+
+        $this->quizService->detachCategories($quizId, $data['category_ids']);
+
+        return response()->json(['message' => 'Categories detached successfully'], 200);
+    }
+
+    public function getQuizzesByCategory($categoryId)
+    {
+        $quizzes = $this->quizService->getQuizzesByCategory($categoryId);
+        return response()->json($quizzes, 200);
+    }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Quiz;
+use App\Models\Category;
 
 class QuizService
 {
@@ -36,5 +37,25 @@ class QuizService
     public function getQuizByLanguage($languageId)
     {
         return Quiz::query()->where('language_id',$languageId)->with('questions.answers')->get();
+    }
+
+    public function attachCategories($quizId, $categoryIds)
+    {
+        $quiz = Quiz::findOrFail($quizId);
+        $quiz->categories()->attach($categoryIds);
+    }
+
+    public function detachCategories($quizId, $categoryIds)
+    {
+        $quiz = Quiz::findOrFail($quizId);
+        $quiz->categories()->detach($categoryIds);
+    }
+
+    public function getQuizzesByCategory($categoryId)
+    {
+        $category = Category::findOrFail($categoryId);
+        $quizzes = $category->quizzes()->get();
+        return $quizzes;
+        
     }
 }
