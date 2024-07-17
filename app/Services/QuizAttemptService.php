@@ -9,8 +9,10 @@ use App\Models\User;
 use App\Models\Answer;
 use App\Models\Language;
 use App\Models\Question;
+use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\QuizAttemptAnswer;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,15 +28,11 @@ class QuizAttemptService
     public function startQuiz($quizId, $data)
     {
         $user = Auth::user();
-
-
         $plan = Plan::query()->where('id', $user->plan_id)->first();
-
 
         if (!$plan) {
             return ['error' => 'No active plan found.'];
         }
-
 
         $attempts = QuizAttempt::where('quiz_id', $quizId)
                                ->where('user_id', $user->id)
@@ -44,20 +42,31 @@ class QuizAttemptService
             return ['error' => 'You have reached the maximum number of attempts for this quiz'];
         }
 
+        $quiz = Quiz::findOrFail($quizId);
+        $startTime = Carbon::now();
+        $endTime = $startTime->copy()->addMinutes($quiz->time_limit);
 
         $quizAttempt = QuizAttempt::create([
             'user_id' => $user->id,
             'quiz_id' => $quizId,
             'language_id' => $data['language_id'],
             'score' => null,
+            'start_time' => $startTime,
+            'end_time' => $endTime,
         ]);
 
         return $quizAttempt;
     }
 
+
     public function submitAnswers($quizAttemptId, $data)
     {
         $quizAttempt = QuizAttempt::query()->findOrFail($quizAttemptId);
+
+        if (Carbon::now()->greaterThan($quizAttempt->end_time)) {
+            return ['error' => 'Time limit exceeded'];
+        }
+
         $score = 0;
         $quizAttemptAnswers = [];
 
