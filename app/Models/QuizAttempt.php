@@ -37,6 +37,8 @@ class QuizAttempt extends Model implements Auditable
         'quiz_id',
         'language_id',
         'score',
+        'start_time',
+        'end_time',
     ];
     public function user()
     {

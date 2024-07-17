@@ -21,6 +21,7 @@ class QuizController extends Controller
             'title' => 'required|string',
             'description' => 'required|string',
             'language_id' => 'required|string|exists:languages,id',
+            'time_limit' => 'required|integer',
         ]);
 
         return $this->quizService->createQuiz($data);
@@ -33,6 +34,7 @@ class QuizController extends Controller
             'title'=> 'string',
             'description'=> 'string',
             'language_id' => 'string|exists:languages,id',
+            'time_limit' => 'integer',
         ]);
 
         return $this->quizService->updateQuiz($quizId, $data);

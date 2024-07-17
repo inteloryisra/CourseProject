@@ -34,6 +34,7 @@ class Quiz extends Model implements Auditable
         'title',
         'description',
         'language_id',
+        'time_limit',
     ];
 
     public function questions()
