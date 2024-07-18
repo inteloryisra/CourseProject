@@ -8,6 +8,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\QuizAttemptController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PurchaseController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -76,6 +77,7 @@ Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 Route::post('/quizzes/{quizId}/attach-categories', [QuizController::class, 'attachCategories']);
 Route::post('/quizzes/{quizId}/detach-categories', [QuizController::class, 'detachCategories']);
 Route::get('/categories/{categoryId}/quizzes', [QuizController::class, 'getQuizzesByCategory']);
+Route::post('/purchase/extra-attempts', [PurchaseController::class, 'createPurchase'])->middleware('auth:sanctum');
 
 
 

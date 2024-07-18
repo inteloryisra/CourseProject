@@ -8,6 +8,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -72,10 +73,10 @@ class User extends Authenticatable implements Auditable
         'role' => UserRoles::class,
 
     ];
-    public function plan(): HasOne
-    {
-        return $this->hasOne(Plan::class);
-    }
+    public function plans(): BelongsToMany
+{
+    return $this->belongsToMany(Plan::class, 'user_plans')->withPivot('max_quiz_attempts')->withTimestamps();
+}
 
     public function quizAttempts(): HasMany
     {
@@ -93,7 +94,12 @@ class User extends Authenticatable implements Auditable
     }
 
     public function emailVerificationTokens(): HasMany
-{
-    return $this->hasMany(EmailVerificationToken::class);
-}
+    {
+        return $this->hasMany(EmailVerificationToken::class);
+    }
+
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(Purchase::class);
+    }
 }

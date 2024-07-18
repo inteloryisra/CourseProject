@@ -12,6 +12,7 @@ use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\QuizAttemptAnswer;
+use App\Models\UserPlan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -34,11 +35,14 @@ class QuizAttemptService
             return ['error' => 'No active plan found.'];
         }
 
+
+        $user_plan = UserPlan::query()->where('user_id',$user->id)->first();
+
         $attempts = QuizAttempt::where('quiz_id', $quizId)
                                ->where('user_id', $user->id)
                                ->count();
 
-        if ($attempts >= $plan->max_quiz_attempts) {
+        if ($attempts >= $user_plan->max_quiz_attempts) {
             return ['error' => 'You have reached the maximum number of attempts for this quiz'];
         }
 
