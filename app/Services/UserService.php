@@ -109,6 +109,15 @@ class UserService
            'plan_id' => $plan->id,
         ]);
 
+        DB::table('user_plans')->updateOrInsert(
+            ['user_id' => $user->id],
+            [
+                'plan_id' => $plan->id,
+                'max_quiz_attempts' => $plan->max_quiz_attempts,
+                'updated_at' => now()
+            ]
+        );
+
         return $user;
     }
 
