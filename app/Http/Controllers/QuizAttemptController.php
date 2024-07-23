@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\QuizAttemptService;
 use App\Models\Language;
+use Illuminate\Support\Facades\Auth;
 
 class QuizAttemptController extends Controller
 {
@@ -48,5 +49,13 @@ class QuizAttemptController extends Controller
     {
         $quizAttempt = $this->quizAttemptService->getQuizAttempt($quizAttemptId);
         return response()->json($quizAttempt, 200);
+    }
+
+    public function getQuizHistory(Request $request)
+    {
+        $userId = Auth::id();
+        $quizHistory = $this->quizAttemptService->getQuizHistory($userId);
+
+        return response()->json($quizHistory, 200);
     }
 }
