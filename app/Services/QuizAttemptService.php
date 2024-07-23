@@ -146,5 +146,13 @@ class QuizAttemptService
     public function getQuizAttempt($quizAttemptId)
     {
         return QuizAttempt::query()->with(['quiz', 'user', 'answers'])->findOrFail($quizAttemptId);
-}
+    }
+
+    public function getQuizHistory($userId)
+    {
+        return QuizAttempt::with('quiz')
+            ->where('user_id', $userId)
+            ->orderBy('end_time', 'desc') 
+            ->get();
+    }
 }

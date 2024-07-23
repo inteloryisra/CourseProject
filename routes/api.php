@@ -78,6 +78,7 @@ Route::post('/quizzes/{quizId}/attach-categories', [QuizController::class, 'atta
 Route::post('/quizzes/{quizId}/detach-categories', [QuizController::class, 'detachCategories']);
 Route::get('/categories/{categoryId}/quizzes', [QuizController::class, 'getQuizzesByCategory']);
 Route::post('/purchase/extra-attempts', [PurchaseController::class, 'createPurchase'])->middleware('auth:sanctum');
+Route::get('/quiz-history', [QuizAttemptController::class, 'getQuizHistory'])->middleware('auth:sanctum');
 
 
 
